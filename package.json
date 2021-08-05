@@ -1,0 +1,39 @@
+{
+  "name": "@mintjamsinc/webtop-api",
+  "version": "1.0.0",
+  "description": "A set of Webtop APIs pre-installed in MintJams Content Repository 6.x.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint-auth": "eslint src/auth.js",
+    "lint-bpm": "eslint src/bpm.js",
+    "lint-cms": "eslint src/cms.js",
+    "lint-user": "eslint src/user.js",
+    "lint-util": "eslint src/util.js",
+    "build-auth": "npm run lint-auth && rollup -c rollup.auth.js",
+    "build-bpm": "npm run lint-bpm && rollup -c rollup.bpm.js",
+    "build-cms": "npm run lint-cms && rollup -c rollup.cms.js",
+    "build-user": "npm run lint-user && rollup -c rollup.user.js",
+    "build-util": "npm run lint-util && rollup -c rollup.util.js",
+    "build": "npm run build-auth && npm run build-bpm && npm run build-cms && npm run build-user && npm run build-util"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mintjamsinc/webtop-api.git"
+  },
+  "keywords": [
+    "mintjams",
+    "webtop"
+  ],
+  "author": "MintJams Inc. <dev@mintjams.co.jp> (https://mintjams.jp/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/mintjamsinc/webtop-api/issues"
+  },
+  "homepage": "https://github.com/mintjamsinc/webtop-api#readme",
+  "devDependencies": {
+    "eslint": "^7.32.0",
+    "rollup": "^2.55.1",
+    "rollup-plugin-terser": "^7.0.2"
+  }
+}
