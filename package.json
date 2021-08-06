@@ -10,12 +10,12 @@
     "lint-cms": "eslint src/cms.js",
     "lint-user": "eslint src/user.js",
     "lint-util": "eslint src/util.js",
-    "build-auth": "npm run lint-auth && rollup -c rollup.auth.js",
-    "build-bpm": "npm run lint-bpm && rollup -c rollup.bpm.js",
-    "build-cms": "npm run lint-cms && rollup -c rollup.cms.js",
-    "build-user": "npm run lint-user && rollup -c rollup.user.js",
-    "build-util": "npm run lint-util && rollup -c rollup.util.js",
-    "build": "npm run build-auth && npm run build-bpm && npm run build-cms && npm run build-user && npm run build-util"
+    "build:auth": "npm run lint-auth && rollup -c build/rollup.auth.js",
+    "build:bpm": "npm run lint-bpm && rollup -c build/rollup.bpm.js",
+    "build:cms": "npm run lint-cms && rollup -c build/rollup.cms.js",
+    "build:user": "npm run lint-user && rollup -c build/rollup.user.js",
+    "build:util": "npm run lint-util && rollup -c build/rollup.util.js",
+    "build": "npm run build:auth && npm run build:bpm && npm run build:cms && npm run build:user && npm run build:util"
   },
   "repository": {
     "type": "git",
