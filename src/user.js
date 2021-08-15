@@ -83,6 +83,9 @@ export class UserClient {
 export class Authorizable {
 	constructor(data) {
 		this.$data = data;
+		if (!this.$data.properties) {
+			this.$data.properties = {};
+		}
 		for (let k of Object.keys(this.$data)) {
 			Object.defineProperty(this, k, {
 				'get': function() {
