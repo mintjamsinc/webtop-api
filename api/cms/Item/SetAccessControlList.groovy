@@ -13,7 +13,7 @@ import api.http.WebResponse;
 
 	def params = WebRequest.create(request).parseRequest();
 	def identifier = params.id?.trim();
-	if (!identifier || !params.acl) {
+	if (!identifier || params.acl == null) {
 		// Bad Request
 		response.setStatus(400);
 		return;
