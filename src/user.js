@@ -141,7 +141,7 @@ export class Authorizable {
 	get photoURL() {
 		let instance = this;
 		if (instance.getProperty('gravatarEmail')) {
-			let hash = md5(instance.getProperty('gravatarEmail'));
+			let hash = md5(instance.getProperty('gravatarEmail')).toString();
 			return 'https://www.gravatar.com/avatar/' + encodeURIComponent(hash) + '?s=288';
 		}
 
