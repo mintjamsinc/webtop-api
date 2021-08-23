@@ -1,5 +1,7 @@
 // Copyright (c) 2021 MintJams Inc. Licensed under MIT License.
 
+import md5 from 'crypto-js/md5';
+
 let _baseUrl = window.location.href;
 _baseUrl = _baseUrl.substring(0, _baseUrl.lastIndexOf('/')) + '/api';
 let _axios;
@@ -49,19 +51,42 @@ export class Authorizable {
 		});
 	}
 
-	get photoURL() {
+	hasProperty(key) {
 		let instance = this;
-		if (!instance.$data.properties['photo']) {
-			return '';
+		return !!instance.$data.properties[key];
+	}
+
+	getProperty(key, defaultValue) {
+		let instance = this;
+		let p = instance.$data.properties[key];
+		if (!p) {
+			return defaultValue;
 		}
 
-		let modified;
-		try {
-			modified = new Date(instance.$data.properties['lastModified'].value);
-		} catch (ignore) {
-			modified = new Date();
+		if (p.value == undefined) {
+			return defaultValue;
 		}
-		return _baseUrl + '/user/Authorizable/Photo.groovy?id=' + encodeURIComponent(instance.$data.id) + '&modified=' + modified.getTime();
+		return p.value;
+	}
+
+	get photoURL() {
+		let instance = this;
+		if (instance.getProperty('gravatarEmail')) {
+			let hash = md5(instance.getProperty('gravatarEmail'));
+			return 'https://www.gravatar.com/avatar/' + encodeURIComponent(hash) + '?s=288';
+		}
+
+		if (instance.hasProperty('photo')) {
+			let modified;
+			try {
+				modified = new Date(instance.getProperty('lastModified'));
+			} catch (ignore) {
+				modified = new Date();
+			}
+			return _baseUrl + '/user/Authorizable/Photo.groovy?id=' + encodeURIComponent(instance.$data.id) + '&modified=' + modified.getTime();
+		}
+
+		return '';
 	}
 }
 
