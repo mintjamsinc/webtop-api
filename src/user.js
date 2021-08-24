@@ -1,6 +1,8 @@
 // Copyright (c) 2021 MintJams Inc. Licensed under MIT License.
 
 import md5 from 'crypto-js/md5';
+import sha256 from 'crypto-js/sha256';
+import { v4 as uuidv4 } from 'uuid';
 
 let _baseUrl = window.location.href;
 _baseUrl = _baseUrl.substring(0, _baseUrl.lastIndexOf('/')) + '/api';
@@ -178,6 +180,11 @@ export class User extends Authorizable {
 		).then(function() {
 			return instance;
 		});
+	}
+
+	generateSecret() {
+		let instance = this;
+		return (sha256(instance.id + ':' + Date.now()).toString() + uuidv4().split('-').join('')).toLowerCase();
 	}
 }
 
