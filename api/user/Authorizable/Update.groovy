@@ -153,7 +153,7 @@ import api.security.Authorizable;
 				return;
 			}
 
-			def all = authorizable.memberOf().collect { it.name }
+			def all = authorizable.members.collect { it.name }
 			for (id in params.addMembers) {
 				if (all.contains(id)) {
 					// Conflict
@@ -176,7 +176,7 @@ import api.security.Authorizable;
 		}
 
 		if (params.addGroups != null) {
-			def all = authorizable.members.collect { it.name }
+			def all = authorizable.memberOf.collect { it.name }
 			for (id in params.addGroups) {
 				if (all.contains(id)) {
 					// Conflict
