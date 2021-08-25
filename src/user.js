@@ -142,12 +142,12 @@ export class Authorizable {
 
 	get photoURL() {
 		let instance = this;
-		if (instance.getProperty('gravatarEmail')) {
-			let hash = md5(instance.getProperty('gravatarEmail')).toString();
+		if (instance.getProperty('mi:gravatarEmail')) {
+			let hash = md5(instance.getProperty('mi:gravatarEmail')).toString();
 			return 'https://www.gravatar.com/avatar/' + encodeURIComponent(hash) + '?s=288';
 		}
 
-		if (instance.hasProperty('photo')) {
+		if (instance.hasProperty('mi:photo')) {
 			let modified;
 			try {
 				modified = new Date(instance.getProperty('lastModified'));
