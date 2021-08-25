@@ -63,7 +63,7 @@ import api.security.Authorizable;
 					return;
 				}
 
-				authorizable.setAttribute("photo", srcItem.contentAsByteArray, srcItem.contentType);
+				authorizable.setAttribute("mi:photo", srcItem.contentAsByteArray, srcItem.contentType);
 			}
 		}
 
