@@ -32,16 +32,16 @@ import api.security.Authorizable;
 		authorizable.setAttribute("lastModified", now);
 		authorizable.setAttribute("lastModifiedBy", repositorySession.userID);
 
-		if (params.photo) {
-			if (params.photo.uploadID) {
-				def mu = MultipartUpload.create(context).resolve(params.photo.uploadID);
+		if (params["mi:photo"]) {
+			if (params["mi:photo"].uploadID) {
+				def mu = MultipartUpload.create(context).resolve(params["mi:photo"].uploadID);
 				if (!mu.exists()) {
 					// Bad Request
 					WebResponse.create(response).setStatus(400);
 					return;
 				}
 
-				def mimeType = params.photo.mimeType;
+				def mimeType = params["mi:photo"].mimeType;
 				if (!mimeType || mimeType == "application/octet-stream") {
 					def type = MimeTypeAPI.getMimeType(mu.filename);
 					if (type) {
@@ -55,8 +55,8 @@ import api.security.Authorizable;
 				authorizable.setAttribute("photo", mu.file.bytes, mimeType);
 			}
 
-			if (params.photo.path) {
-				def srcItem = Item.create(context).findByPath(params.photo.path);
+			if (params["mi:photo"].path) {
+				def srcItem = Item.create(context).findByPath(params["mi:photo"].path);
 				if (!srcItem.exists()) {
 					// Bad Request
 					WebResponse.create(response).setStatus(400);
