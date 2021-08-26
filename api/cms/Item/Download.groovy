@@ -14,7 +14,8 @@ import api.http.WebResponse;
 	def params = [
 		"id": WebAPI.getParameter("id").defaultString(),
 		"version": WebAPI.getParameter("version").defaultString(),
-		"range": WebRequest.create(request).range
+		"range": WebRequest.create(request).range,
+		"isAttachment": WebAPI.getParameter("attachment").isSpecified()
 	];
 	if (!params.id) {
 		// Bad Request
@@ -45,11 +46,11 @@ import api.http.WebResponse;
 			}
 		}
 
-		WebResponse
-			.create(response)
-			.setStatus(200)
-			.setAttachment(item.name)
-			.enableContentCache()
+		def resp = WebResponse.create(response);
+		if (params.isAttachment) {
+			resp.setAttachment(item.name);
+		}
+		resp.enableContentCache()
 			.setContentType(item.contentType)
 			.setCharacterEncoding(item.contentEncoding)
 			.setContentLength(item.contentLength)

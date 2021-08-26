@@ -194,6 +194,7 @@ export class Item {
 		} else {
 			url += '&modified=' + encodeURIComponent('' + new Date(this.$data.lastModificationTime).getTime());
 		}
+		url += '&attachment';
 		window.location.href = url;
 	}
 
