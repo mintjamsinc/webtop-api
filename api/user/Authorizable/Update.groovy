@@ -52,7 +52,7 @@ import api.security.Authorizable;
 					mimeType = "application/octet-stream";
 				}
 
-				authorizable.setAttribute("photo", mu.file.bytes, mimeType);
+				authorizable.setAttribute("mi:photo", mu.file.bytes, mimeType);
 			}
 
 			if (params["mi:photo"].path) {
