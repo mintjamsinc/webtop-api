@@ -28,7 +28,7 @@ import api.http.WebResponse;
 
 	try {
 		def authorizable = Authorizable.create(context).findByName(params.id);
-		if (!authorizable.exists() || !authorizable.contains("photo")) {
+		if (!authorizable.exists() || !authorizable.contains("mi:photo")) {
 			// Not Found
 			response.setStatus(404);
 			return;
@@ -38,10 +38,10 @@ import api.http.WebResponse;
 			.create(response)
 			.setStatus(200)
 			.enableContentCache()
-			.setContentType(authorizable.getBinaryType("photo"))
-			.setContentLength(authorizable.getBinaryLength("photo"))
+			.setContentType(authorizable.getBinaryType("mi:photo"))
+			.setContentLength(authorizable.getBinaryLength("mi:photo"))
 			.setETag(authorizable.getDate("lastModified").time as String)
-			.writePartial(authorizable.getStream("photo"), params.range);
+			.writePartial(authorizable.getStream("mi:photo"), params.range);
 	} catch (Throwable ex) {
 		log.error(ex.message, ex);
 		WebResponse.create(response).sendError(ex);
