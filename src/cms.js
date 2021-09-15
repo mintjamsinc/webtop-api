@@ -220,6 +220,35 @@ export class Item {
 		});
 	}
 
+	hasProperty(key) {
+		let instance = this;
+		return !!instance.$data.properties[key];
+	}
+
+	getProperty(key, defaultValue) {
+		let instance = this;
+		let p = instance.$data.properties[key];
+		if (!p) {
+			return defaultValue;
+		}
+
+		if (p.value == undefined) {
+			return defaultValue;
+		}
+		if (p.isMasked) {
+			if (!Array.isArray(p.value)) {
+				return window.Webtop.authClient.unmask(p.value);
+			} else {
+				let l = [];
+				for (let v of p.value) {
+					l.push(window.Webtop.authClient.unmask(v));
+				}
+				return l;
+			}
+		}
+		return p.value;
+	}
+
 	duplicate() {
 		return _axios.post(_baseUrl + '/cms/Item/Duplicate.groovy', {
 			'id': this.$data.id

@@ -137,6 +137,17 @@ export class Authorizable {
 		if (p.value == undefined) {
 			return defaultValue;
 		}
+		if (p.isMasked) {
+			if (!Array.isArray(p.value)) {
+				return window.Webtop.authClient.unmask(p.value);
+			} else {
+				let l = [];
+				for (let v of p.value) {
+					l.push(window.Webtop.authClient.unmask(v));
+				}
+				return l;
+			}
+		}
 		return p.value;
 	}
 
