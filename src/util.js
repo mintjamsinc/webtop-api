@@ -1,4 +1,4 @@
-// Copyright (c) 2021 MintJams Inc. Licensed under MIT License.
+/* Copyright (c) 2021 MintJams Inc. Licensed under MIT License. */
 
 export class Loader {
 	static load(url) {

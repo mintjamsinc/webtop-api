@@ -1,4 +1,4 @@
-// Copyright (c) 2021 MintJams Inc. Licensed under MIT License.
+/* Copyright (c) 2021 MintJams Inc. Licensed under MIT License. */
 
 let _baseUrl = window.location.href;
 _baseUrl = _baseUrl.substring(0, _baseUrl.lastIndexOf('/')) + '/api';

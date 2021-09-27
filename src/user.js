@@ -1,4 +1,4 @@
-// Copyright (c) 2021 MintJams Inc. Licensed under MIT License.
+/* Copyright (c) 2021 MintJams Inc. Licensed under MIT License. */
 
 import md5 from 'crypto-js/md5';
 import sha256 from 'crypto-js/sha256';
@@ -11,6 +11,15 @@ let _axios;
 export class UserClient {
 	constructor({axios}) {
 		_axios = axios;
+
+		this.$everyone = this.newAuthorizable({
+			'id': 'everyone',
+			'isGroup': true,
+		});
+	}
+
+	get everyone() {
+		return this.$everyone;
 	}
 
 	createNewAuthorizable(params) {

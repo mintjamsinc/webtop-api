@@ -1,4 +1,4 @@
-// Copyright (c) 2021 MintJams Inc. Licensed under MIT License.
+/* Copyright (c) 2021 MintJams Inc. Licensed under MIT License. */
 
 import * as user from "./user";
 import CryptoJS from 'crypto-js';
@@ -10,6 +10,15 @@ let _axios;
 export class AuthClient {
 	constructor({axios}) {
 		_axios = axios;
+	}
+
+	authenticate(params) {
+		if (!params) {
+			params = {};
+		}
+		return _axios.post(_baseUrl + '/auth/Authenticate.groovy', params).then(function(response) {
+			return response.data;
+		});
 	}
 
 	getUser(params) {
