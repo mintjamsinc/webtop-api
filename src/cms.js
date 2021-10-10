@@ -385,7 +385,7 @@ export class PreviewURLBuilder {
 			options = {};
 		}
 		if (!options.urlPrefix) {
-			options.urlPrefix = '/bin/cms.html';
+			options.urlPrefix = '/bin/cms.cgi';
 		}
 		this.$options = options;
 		this.$item = item;
