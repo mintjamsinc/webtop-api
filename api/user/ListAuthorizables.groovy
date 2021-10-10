@@ -4,7 +4,7 @@ import api.http.WebRequest;
 import api.http.WebResponse;
 import api.security.Authorizable;
 import api.util.Text;
-import groovy.json.JsonOutput;
+import api.util.JSON;
 
 {->
 	if (repositorySession.isAnonymous()) {
@@ -33,7 +33,7 @@ import groovy.json.JsonOutput;
 			WebResponse.create(response)
 				.setStatus(200)
 				.setContentType("application/json");
-			out.print(JsonOutput.toJson(resp));
+			out.print(JSON.stringify(resp));
 			return;
 		}
 
@@ -91,7 +91,7 @@ import groovy.json.JsonOutput;
 		WebResponse.create(response)
 			.setStatus(200)
 			.setContentType("application/json");
-		out.print(JsonOutput.toJson(resp));
+		out.print(JSON.stringify(resp));
 		return;
 	} catch (Throwable ex) {
 		log.error(ex.message, ex);

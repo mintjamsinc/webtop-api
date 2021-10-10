@@ -4,7 +4,7 @@ import api.bpm.ProcessInstance;
 import api.bpm.ProcessInstanceHelper;
 import api.http.WebRequest;
 import api.http.WebResponse;
-import groovy.json.JsonOutput;
+import api.util.JSON;
 
 {->
 	if (repositorySession.isAnonymous()) {
@@ -27,7 +27,7 @@ import groovy.json.JsonOutput;
 		WebResponse.create(response)
 			.setStatus(200)
 			.setContentType("application/json");
-		out.print(JsonOutput.toJson(ProcessInstanceHelper.create(context).with(pi).exportVariables()));
+		out.print(JSON.stringify(ProcessInstanceHelper.create(context).with(pi).exportVariables()));
 	} catch (Throwable ex) {
 		log.error(ex.message, ex);
 		WebResponse.create(response).sendError(ex);

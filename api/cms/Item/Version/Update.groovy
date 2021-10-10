@@ -5,7 +5,6 @@ import api.cms.Version;
 import api.http.WebRequest;
 import api.http.WebResponse;
 import api.security.Authorizable;
-import groovy.json.JsonOutput;
 
 {->
 	if (repositorySession.isAnonymous()) {

@@ -3,7 +3,7 @@
 import api.util.ISO4217;
 import api.http.WebRequest;
 import api.http.WebResponse;
-import groovy.json.JsonOutput;
+import api.util.JSON;
 
 {->
 	if (repositorySession.isAnonymous()) {
@@ -31,7 +31,7 @@ import groovy.json.JsonOutput;
 		WebResponse.create(response)
 			.setStatus(200)
 			.setContentType("application/json");
-		out.print(JsonOutput.toJson(resp));
+		out.print(JSON.stringify(resp));
 		return;
 	} catch (Throwable ex) {
 		log.error(ex.message, ex);

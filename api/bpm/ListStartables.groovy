@@ -3,7 +3,7 @@
 import api.bpm.ProcessDefinition;
 import api.http.WebRequest;
 import api.http.WebResponse;
-import groovy.json.JsonOutput;
+import api.util.JSON;
 
 {->
 	if (repositorySession.isAnonymous()) {
@@ -37,15 +37,20 @@ import groovy.json.JsonOutput;
 				if (!startFormKey) {
 					continue;
 				}
-				if (startFormKey.startsWith("jcr:///bin/cms.html/")) {
-					startFormKey = "/content/" + startFormKey.substring("jcr:///bin/cms.html/".length());
-					try {
-						if (!repositorySession.resourceResolver.getResource(startFormKey).canRead()) {
-							continue;
-						}
-					} catch (Throwable ignore) {
-						continue;
+				def canStartFormRead = false;
+				for (prefix in ["jcr:///bin/cms.html/"/* deprecated */, "cms://cgi/", "cms://content/"]) {
+					if (startFormKey.startsWith(prefix)) {
+						startFormKey = "/content/" + startFormKey.substring(prefix.length());
+						try {
+							if (repositorySession.resourceResolver.getResource(startFormKey).canRead()) {
+								canStartFormRead = true;
+								break;
+							}
+						} catch (Throwable ignore) {}
 					}
+				}
+				if (!canStartFormRead) {
+					continue;
 				}
 
 				resp.startables.add(ProcessDefinition.create(context).with(item).toObject());
@@ -70,7 +75,7 @@ import groovy.json.JsonOutput;
 		WebResponse.create(response)
 			.setStatus(200)
 			.setContentType("application/json");
-		out.print(JsonOutput.toJson(resp));
+		out.print(JSON.stringify(resp));
 	} catch (Throwable ex) {
 		log.error(ex.message, ex);
 		WebResponse.create(response).sendError(ex);

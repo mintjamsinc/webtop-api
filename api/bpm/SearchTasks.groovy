@@ -4,7 +4,7 @@ import api.bpm.Task;
 import api.http.WebRequest;
 import api.http.WebResponse;
 import api.util.ISO8601;
-import groovy.json.JsonOutput;
+import api.util.JSON;
 
 {->
 	if (repositorySession.isAnonymous()) {
@@ -127,7 +127,7 @@ import groovy.json.JsonOutput;
 		WebResponse.create(response)
 			.setStatus(200)
 			.setContentType("application/json");
-		out.print(JsonOutput.toJson(resp));
+		out.print(JSON.stringify(resp));
 	} catch (Throwable ex) {
 		log.error(ex.message, ex);
 		WebResponse.create(response).sendError(ex);

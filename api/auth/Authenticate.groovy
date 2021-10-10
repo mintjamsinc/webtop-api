@@ -4,7 +4,7 @@ import api.http.WebRequest;
 import api.http.WebResponse;
 import api.security.User;
 import api.security.otp.TOTP;
-import groovy.json.JsonOutput;
+import api.util.JSON;
 
 {->
 	try {
@@ -91,7 +91,7 @@ import groovy.json.JsonOutput;
 		WebResponse.create(response)
 			.setStatus(200)
 			.setContentType("application/json");
-		out.print(JsonOutput.toJson(resp));
+		out.print(JSON.stringify(resp));
 	} catch (Throwable ex) {
 		log.error(ex.message, ex);
 		WebResponse.create(response).sendError(ex);
