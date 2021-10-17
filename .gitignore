@@ -105,3 +105,6 @@ dist
 
 # Project file
 .project
+
+# Copy from vue project
+copy.sh
