@@ -37,20 +37,24 @@ import api.util.JSON;
 				if (!startFormKey) {
 					continue;
 				}
-				def canStartFormRead = false;
-				for (prefix in ["jcr:///bin/cms.html/"/* deprecated */, "cms://cgi/", "cms://content/"]) {
-					if (startFormKey.startsWith(prefix)) {
-						startFormKey = "/content/" + startFormKey.substring(prefix.length());
-						try {
-							if (repositorySession.resourceResolver.getResource(startFormKey).canRead()) {
-								canStartFormRead = true;
-								break;
-							}
-						} catch (Throwable ignore) {}
+				if (startFormKey.startsWith("app://")) {
+					// application
+				} else {
+					def canStartFormRead = false;
+					for (prefix in ["jcr:///bin/cms.html/"/* deprecated */, "cms://cgi/", "cms://content/"]) {
+						if (startFormKey.startsWith(prefix)) {
+							startFormKey = "/content/" + startFormKey.substring(prefix.length());
+							try {
+								if (repositorySession.resourceResolver.getResource(startFormKey).canRead()) {
+									canStartFormRead = true;
+									break;
+								}
+							} catch (Throwable ignore) {}
+						}
 					}
-				}
-				if (!canStartFormRead) {
-					continue;
+					if (!canStartFormRead) {
+						continue;
+					}
 				}
 
 				resp.startables.add(ProcessDefinition.create(context).with(item).toObject());
