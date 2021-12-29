@@ -578,16 +578,16 @@ export class Currency {
 
 export class MultipartUpload {
 	constructor({file, options}) {
-		let vm = this;
+		let instance = this;
 		if (!file) {
 			throw new Error("Missing object.");
 		}
 
-		vm.options = options;
-		if (!vm.options) {
-			vm.options = {};
+		instance.options = options;
+		if (!instance.options) {
+			instance.options = {};
 		}
-		vm.file = (function() {
+		instance.file = (function() {
 			if (file == undefined) {
 				return undefined;
 			}
@@ -611,42 +611,42 @@ export class MultipartUpload {
 			}
 			return undefined;
 		})();
-		vm.entry = (function() {
-			if (vm.file == undefined) {
+		instance.entry = (function() {
+			if (instance.file == undefined) {
 				return undefined;
 			}
-			if (vm.file.isDirectory != undefined) {
+			if (instance.file.isDirectory != undefined) {
 				return file;
 			}
-			if (vm.file.getAsEntry) {
+			if (instance.file.getAsEntry) {
 				return file.getAsEntry();
 			}
-			if (vm.file.webkitGetAsEntry) {
+			if (instance.file.webkitGetAsEntry) {
 				return file.webkitGetAsEntry();
 			}
 			return undefined;
 		})();
 		let slice = (function() {
-			if (vm.file == undefined) {
+			if (instance.file == undefined) {
 				return undefined;
 			}
-			if (vm.file.webkitSlice) {
-				return vm.file.webkitSlice;
+			if (instance.file.webkitSlice) {
+				return instance.file.webkitSlice;
 			}
-			if (vm.file.mozSlice) {
-				return vm.file.mozSlice;
+			if (instance.file.mozSlice) {
+				return instance.file.mozSlice;
 			}
-			if (vm.file.slice) {
-				return vm.file.slice;
+			if (instance.file.slice) {
+				return instance.file.slice;
 			}
 			return undefined;
 		})();
 
-		if (!vm.file && !vm.entry) {
+		if (!instance.file && !instance.entry) {
 			throw new Error("Missing object.");
 		}
-		if (vm.entry && vm.entry.isDirectory) {
-			throw new Error("The object is directory: " + vm.entry.fullPath);
+		if (instance.entry && instance.entry.isDirectory) {
+			throw new Error("The object is directory: " + instance.entry.fullPath);
 		}
 		if (!slice) {
 			throw new Error("The object does not have a slice method.");
@@ -654,16 +654,16 @@ export class MultipartUpload {
 	}
 
 	get filename() {
-		let vm = this;
-		if (!(vm.file.constructor.name == 'File')) {
+		let instance = this;
+		if (!(instance.file.constructor.name == 'File')) {
 			return undefined;
 		}
 
 		let path;
-		if (vm.entry) {
-			path = vm.entry.fullPath;
+		if (instance.entry) {
+			path = instance.entry.fullPath;
 		} else {
-			path = vm.file.name;
+			path = instance.file.name;
 		}
 		let p = path.lastIndexOf('/');
 		if (p != -1) {
@@ -673,45 +673,45 @@ export class MultipartUpload {
 	}
 
 	get mimeType() {
-		let vm = this;
-		return vm.file.type;
+		let instance = this;
+		return instance.file.type;
 	}
 
 	get totalSize() {
-		let vm = this;
-		if (!vm.file) {
+		let instance = this;
+		if (!instance.file) {
 			return undefined;
 		}
-		return vm.file.size;
+		return instance.file.size;
 	}
 
 	get uploadedSize() {
-		let vm = this;
-		if (!vm.data) {
+		let instance = this;
+		if (!instance.data) {
 			return 0;
 		}
-		return vm.data.file.length;
+		return instance.data.file.length;
 	}
 
 	cancel() {
-		let vm = this;
-		vm.cancelled = true;
-		return vm;
+		let instance = this;
+		instance.cancelled = true;
+		return instance;
 	}
 
 	get id() {
-		let vm = this;
-		if (!vm.data) {
+		let instance = this;
+		if (!instance.data) {
 			return undefined;
 		}
-		return vm.data.id;
+		return instance.data.id;
 	}
 
 	get chunkSize() {
-		let vm = this;
+		let instance = this;
 		let chunkSize = 0;
-		if (vm.options && (typeof vm.options.chunkSize == 'number')) {
-			chunkSize = vm.options.chunkSize;
+		if (instance.options && (typeof instance.options.chunkSize == 'number')) {
+			chunkSize = instance.options.chunkSize;
 		}
 		if (chunkSize <= 0) {
 			chunkSize = 1024 * 1024;
@@ -720,17 +720,17 @@ export class MultipartUpload {
 	}
 
 	start() {
-		let vm = this;
+		let instance = this;
 		let fireEvent = function() {
-			if (typeof vm.options.onprogress != 'function') {
+			if (typeof instance.options.onprogress != 'function') {
 				return;
 			}
-			if (!vm.data) {
+			if (!instance.data) {
 				return;
 			}
 
 			try {
-				vm.options.onprogress(vm);
+				instance.options.onprogress(instance);
 			} catch (ex) {
 				// ignore
 			}
@@ -738,11 +738,11 @@ export class MultipartUpload {
 
 		return _axios.post(_baseUrl + '/cms/MultipartUpload/Initiate.groovy', {
 		}).then(function(response) {
-			vm.data = response.data;
+			instance.data = response.data;
 			fireEvent();
 		}).then(function() {
-			if (vm.totalSize == 0) {
-				return vm;
+			if (instance.totalSize == 0) {
+				return instance;
 			}
 
 			return new Promise(function(resolve, reject) {
@@ -753,14 +753,14 @@ export class MultipartUpload {
 							let encoded = event.target.result;
 							encoded = encoded.substring(encoded.indexOf(";base64,") + 8);
 							_axios.post(_baseUrl + '/cms/MultipartUpload/Append.groovy', {
-								'id': vm.id,
+								'id': instance.id,
 								'data': encoded
 							}).then(function(response) {
-								vm.data = response.data;
+								instance.data = response.data;
 								fireEvent();
 
-								if (vm.data.file.length >= vm.totalSize) {
-									resolve(vm);
+								if (instance.data.file.length >= instance.totalSize) {
+									resolve(instance);
 									return;
 								}
 
@@ -773,15 +773,15 @@ export class MultipartUpload {
 						}
 					};
 
-					let offset = vm.uploadedSize;
-					let limit = vm.chunkSize;
+					let offset = instance.uploadedSize;
+					let limit = instance.chunkSize;
 					let blob;
-					if (vm.file.webkitSlice) {
-						blob = vm.file.webkitSlice(offset, offset + limit);
-					} else if (vm.file.mozSlice) {
-						blob = vm.file.mozSlice(offset, offset + limit);
-					} else if (vm.file.slice) {
-						blob = vm.file.slice(offset, offset + limit);
+					if (instance.file.webkitSlice) {
+						blob = instance.file.webkitSlice(offset, offset + limit);
+					} else if (instance.file.mozSlice) {
+						blob = instance.file.mozSlice(offset, offset + limit);
+					} else if (instance.file.slice) {
+						blob = instance.file.slice(offset, offset + limit);
 					}
 					reader.readAsDataURL(blob);
 				};
@@ -937,21 +937,9 @@ export class Crawler {
 export class Exporter {
 	constructor(data) {
 		this.$data = data;
-	}
-
-	get paths() {
-		let l = this.$data.paths;
-		if (!l) {
-			return [];
+		if (!this.$data.options) {
+			this.$data.options = {};
 		}
-		if (!Array.isArray(l)) {
-			l = [l];
-		}
-		return l;
-	}
-
-	get noMetadata() {
-		return !!this.$data.noMetadata;
 	}
 
 	get status() {
@@ -964,39 +952,54 @@ export class Exporter {
 
 	execute() {
 		let instance = this;
-		if (instance.paths.length == 0) {
+		if (instance.$data.paths.length == 0) {
 			return Promise.reject("paths");
 		}
 
 		return _axios.post(_baseUrl + '/cms/Exporter/Execute.groovy', {
-			'paths': instance.paths,
-			'noMetadata': instance.noMetadata,
+			'paths': instance.$data.paths,
+			'noMetadata': instance.$data.noMetadata,
 		}).then(function(response) {
-			let data = response.data;
-			instance.$data.identifier = data.identifier;
-			instance.$data.status = data.status;
-			instance.$data.statusText = data.statusText;
-			return instance;
-		});
-	}
+			instance.$data.identifier = response.data.identifier;
+			return new Promise(function(resolve, reject) {
+				const fireEvent = function() {
+					if (typeof instance.$data.options.onprogress != 'function') {
+						return;
+					}
 
-	update() {
-		let instance = this;
-		return _axios.post(_baseUrl + '/cms/Exporter/Update.groovy', {
-			'identifier': instance.$data.identifier,
-		}).then(function(response) {
-			let data = response.data;
-			instance.$data.identifier = data.identifier;
-			instance.$data.status = data.status;
-			instance.$data.statusText = data.statusText;
-			return instance;
-		});
-	}
+					try {
+						instance.$data.options.onprogress(instance);
+					} catch (ex) {
+						// ignore
+					}
+				};
 
-	remove() {
-		let instance = this;
-		return _axios.post(_baseUrl + '/cms/Exporter/Remove.groovy', {
-			'identifier': instance.$data.identifier,
+				let source = new EventSource(_baseUrl + '/cms/Exporter/Execute.groovy?identifier=' + encodeURIComponent(instance.$data.identifier), {
+					'withCredentials': true,
+				});
+				source.onmessage = function(event) {
+					let e = event.data;
+					if (!e) {
+						return;
+					}
+
+					e = JSON.parse(e);
+					instance.$data.status = e.status;
+					instance.$data.statusText = e.statusText;
+					if (['done', 'error'].indexOf(e.status) != -1) {
+						source.close();
+						if (e.status == 'error') {
+							reject(e.statusText);
+						} else {
+							resolve(instance);
+						}
+					}
+					fireEvent();
+				};
+				source.onerror = function() {
+					source.close();
+				};
+			});
 		});
 	}
 
@@ -1009,6 +1012,9 @@ export class Exporter {
 export class Importer {
 	constructor(data) {
 		this.$data = data;
+		if (!this.$data.options) {
+			this.$data.options = {};
+		}
 	}
 
 	get status() {
@@ -1032,31 +1038,46 @@ export class Importer {
 			'path': instance.$data.path,
 			'uploadID': instance.$data.uploadID,
 		}).then(function(response) {
-			let data = response.data;
-			instance.$data.identifier = data.identifier;
-			instance.$data.status = data.status;
-			instance.$data.statusText = data.statusText;
-			return instance;
-		});
-	}
+			instance.$data.identifier = response.data.identifier;
+			return new Promise(function(resolve, reject) {
+				const fireEvent = function() {
+					if (typeof instance.$data.options.onprogress != 'function') {
+						return;
+					}
 
-	update() {
-		let instance = this;
-		return _axios.post(_baseUrl + '/cms/Importer/Update.groovy', {
-			'identifier': instance.$data.identifier,
-		}).then(function(response) {
-			let data = response.data;
-			instance.$data.identifier = data.identifier;
-			instance.$data.status = data.status;
-			instance.$data.statusText = data.statusText;
-			return instance;
-		});
-	}
+					try {
+						instance.$data.options.onprogress(instance);
+					} catch (ex) {
+						// ignore
+					}
+				};
 
-	remove() {
-		let instance = this;
-		return _axios.post(_baseUrl + '/cms/Importer/Remove.groovy', {
-			'identifier': instance.$data.identifier,
+				let source = new EventSource(_baseUrl + '/cms/Importer/Execute.groovy?identifier=' + encodeURIComponent(instance.$data.identifier), {
+					'withCredentials': true,
+				});
+				source.onmessage = function(event) {
+					let e = event.data;
+					if (!e) {
+						return;
+					}
+
+					e = JSON.parse(e);
+					instance.$data.status = e.status;
+					instance.$data.statusText = e.statusText;
+					if (['done', 'error'].indexOf(e.status) != -1) {
+						source.close();
+						if (e.status == 'error') {
+							reject(e.statusText);
+						} else {
+							resolve(instance);
+						}
+					}
+					fireEvent();
+				};
+				source.onerror = function() {
+					source.close();
+				};
+			});
 		});
 	}
 }

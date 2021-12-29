@@ -94,6 +94,7 @@ import api.http.WebResponse;
 			}
 
 			ItemHelper.create(context).with(item).importContent(mu, params.mimeType);
+			mu.remove();
 		}
 
 		repositorySession.commit();

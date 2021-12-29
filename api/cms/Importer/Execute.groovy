@@ -4,6 +4,7 @@ import api.cms.Importer;
 import api.cms.MultipartUpload;
 import api.http.WebRequest;
 import api.http.WebResponse;
+import api.util.JSON;
 
 {->
 	if (repositorySession.isAnonymous()) {
@@ -12,26 +13,37 @@ import api.http.WebResponse;
 		return;
 	}
 
-	def imp = Importer.create(context);
-	def mu = MultipartUpload.create(context);
+	if ("POST".equalsIgnoreCase(request.getMethod())) {
+		prepare();
+		return;
+	}
+
+	if ("GET".equalsIgnoreCase(request.getMethod())) {
+		execute();
+		return;
+	}
+
+	// Method Not Allowed
+	response.setStatus(405);
+}();
+
+def prepare() {
 	try {
 		def params = WebRequest.create(request).parseRequest();
-		def path = params.path?.trim();
-		def uploadID = params.uploadID?.trim();
-		if (!path || !uploadID) {
+		if (!params.path?.trim() || !params.uploadID?.trim()) {
 			// Bad Request
-			WebResponse.create(response).setStatus(400);
+			response.setStatus(400);
 			return;
 		}
 
-		mu.resolve(uploadID);
+		def mu = MultipartUpload.create(context).resolve(params.uploadID);
 		if (!mu.exists()) {
 			// Bad Request
-			WebResponse.create(response).setStatus(400);
+			response.setStatus(400);
 			return;
 		}
 
-		imp.execute(path, mu.file);
+		def imp = Importer.create(context).prepare(params.path, mu.file);
 
 		// Created
 		WebResponse.create(response)
@@ -40,6 +52,40 @@ import api.http.WebResponse;
 		out.print(imp.toJson());
 	} catch (Throwable ex) {
 		log.error(ex.message, ex);
-		WebResponse.create(response).sendError(ex);
 	}
-}();
+}
+
+def execute() {
+	try {
+		def identifier = WebAPI.getParameter("identifier").defaultString().trim();
+		if (!identifier) {
+			// Bad Request
+			response.setStatus(400);
+			return;
+		}
+
+		def imp = Importer.create(context).resolve(identifier);
+		if (!imp.exists()) {
+			// Bad Request
+			response.setStatus(400);
+			return;
+		}
+
+		WebResponse.create(response).setContentType("text/event-stream");
+		imp.setStatusMonitor([
+			setStatus: { status ->
+				out.print("data: " + JSON.stringify(status) + "\n\n");
+				out.flush();
+			},
+		]).execute();
+	} catch (Throwable ex) {
+		log.error(ex.message, ex);
+	} finally {
+		try {
+			repositorySession.rollback();
+		} catch (Throwable ignore) {}
+		try {
+			Thread.sleep(1000);
+		} catch (Throwable ignore) {}
+	}
+}

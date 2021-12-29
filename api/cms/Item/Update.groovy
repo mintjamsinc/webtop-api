@@ -105,6 +105,7 @@ import api.http.WebResponse;
 				}
 
 				ItemHelper.create(context).with(item).importContent(mu, item.contentType);
+				mu.remove();
 				item.setAttribute("jcr:lastModified", new Date());
 			}
 
