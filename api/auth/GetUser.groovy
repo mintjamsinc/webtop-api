@@ -13,7 +13,7 @@ import api.security.User;
 	}
 
 	try {
-		def user = User.create(context).findByName(repositorySession.userID);
+		def user = User.create(context).with(repositorySession.userPrincipal);
 
 		def eTag = (new Date().getTime() as String) + "-" + java.util.UUID.randomUUID().toString();
 		Session.create(context, repositorySession.userID, eTag);
