@@ -44,9 +44,9 @@ import api.util.JSON;
 
 		def stmt = "/jcr:root";
 		if (item.path != "/") {
-			stmt += XPath.encodeXML(item.path);
+			stmt += item.path;
 		}
-		stmt += "/(element(*,nt:folder)|element(*,nt:file))";
+		stmt += "/*";
 		stmt += " order by @jcr:path";
 
 		def result = Search.create(context).execute([
