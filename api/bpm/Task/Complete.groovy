@@ -12,7 +12,7 @@ import api.http.WebResponse;
 	}
 
 	try {
-		def params = WebRequest.create(request).parseRequest();
+		def params = WebRequest.create(context).with(request).parseRequest();
 		def task = Task.create(context).findByIdentifier(params.taskId);
 		if (!(params.checkAssignee == false)) {
 			if (task.assignee != repositorySession.userID) {
@@ -29,9 +29,9 @@ import api.http.WebResponse;
 		task.complete(variables);
 
 		// OK
-		WebResponse.create(response).setStatus(204);
+		WebResponse.create(context).with(response).setStatus(204);
 	} catch (Throwable ex) {
 		log.error(ex.message, ex);
-		WebResponse.create(response).sendError(ex);
+		WebResponse.create(context).with(response).sendError(ex);
 	}
 }();

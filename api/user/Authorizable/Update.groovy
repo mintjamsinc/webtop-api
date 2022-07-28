@@ -15,7 +15,7 @@ import api.security.Authorizable;
 
 	try {
 		def now = new Date();
-		def params = WebRequest.create(request).parseRequest();
+		def params = WebRequest.create(context).with(request).parseRequest();
 		if (!params.id?.trim()) {
 			// Bad Request
 			response.setStatus(400);
@@ -25,7 +25,7 @@ import api.security.Authorizable;
 		def authorizable = Authorizable.create(context).findByName(params.id?.trim());
 		if (!authorizable.exists()) {
 			// Not Found
-			WebResponse.create(response).setStatus(404);
+			WebResponse.create(context).with(response).setStatus(404);
 			return;
 		}
 
@@ -37,7 +37,7 @@ import api.security.Authorizable;
 				def mu = MultipartUpload.create(context).resolve(params["mi:photo"].uploadID);
 				if (!mu.exists()) {
 					// Bad Request
-					WebResponse.create(response).setStatus(400);
+					WebResponse.create(context).with(response).setStatus(400);
 					return;
 				}
 
@@ -59,7 +59,7 @@ import api.security.Authorizable;
 				def srcItem = Item.create(context).findByPath(params["mi:photo"].path);
 				if (!srcItem.exists()) {
 					// Bad Request
-					WebResponse.create(response).setStatus(400);
+					WebResponse.create(context).with(response).setStatus(400);
 					return;
 				}
 
@@ -135,7 +135,7 @@ import api.security.Authorizable;
 		if (params.disable != null) {
 			if (authorizable.isGroup()) {
 				// Bad Request
-				WebResponse.create(response).setStatus(400);
+				WebResponse.create(context).with(response).setStatus(400);
 				return;
 			}
 
@@ -149,7 +149,7 @@ import api.security.Authorizable;
 		if (params.addMembers != null) {
 			if (!authorizable.isGroup()) {
 				// Bad Request
-				WebResponse.create(response).setStatus(400);
+				WebResponse.create(context).with(response).setStatus(400);
 				return;
 			}
 
@@ -157,7 +157,7 @@ import api.security.Authorizable;
 			for (id in params.addMembers) {
 				if (all.contains(id)) {
 					// Conflict
-					WebResponse.create(response).setStatus(409);
+					WebResponse.create(context).with(response).setStatus(409);
 					return;
 				}
 			}
@@ -168,7 +168,7 @@ import api.security.Authorizable;
 		if (params.removeMembers != null) {
 			if (!authorizable.isGroup()) {
 				// Bad Request
-				WebResponse.create(response).setStatus(400);
+				WebResponse.create(context).with(response).setStatus(400);
 				return;
 			}
 
@@ -180,7 +180,7 @@ import api.security.Authorizable;
 			for (id in params.addGroups) {
 				if (all.contains(id)) {
 					// Conflict
-					WebResponse.create(response).setStatus(409);
+					WebResponse.create(context).with(response).setStatus(409);
 					return;
 				}
 			}
@@ -189,7 +189,7 @@ import api.security.Authorizable;
 				def group = Authorizable.create(context).findByName(id);
 				if (!group.isGroup()) {
 					// Bad Request
-					WebResponse.create(response).setStatus(400);
+					WebResponse.create(context).with(response).setStatus(400);
 					return;
 				}
 
@@ -202,7 +202,7 @@ import api.security.Authorizable;
 				def group = Authorizable.create(context).findByName(id);
 				if (!group.isGroup()) {
 					// Bad Request
-					WebResponse.create(response).setStatus(400);
+					WebResponse.create(context).with(response).setStatus(400);
 					return;
 				}
 
@@ -214,14 +214,14 @@ import api.security.Authorizable;
 		repositorySession.commit();
 
 		// OK
-		WebResponse.create(response)
+		WebResponse.create(context).with(response)
 			.setStatus(200)
 			.setContentType("application/json");
 		out.print(authorizable.toJson());
 		return;
 	} catch (Throwable ex) {
 		log.error(ex.message, ex);
-		WebResponse.create(response).sendError(ex);
+		WebResponse.create(context).with(response).sendError(ex);
 	} finally {
 		try {
 			repositorySession.rollback();

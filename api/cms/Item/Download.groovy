@@ -14,7 +14,7 @@ import api.http.WebResponse;
 	def params = [
 		"id": WebAPI.getParameter("id").defaultString(),
 		"version": WebAPI.getParameter("version").defaultString(),
-		"range": WebRequest.create(request).range,
+		"range": WebRequest.create(context).with(request).range,
 		"isAttachment": WebAPI.getParameter("attachment").isSpecified()
 	];
 	if (!params.id) {
@@ -32,7 +32,7 @@ import api.http.WebResponse;
 		def item = Item.create(context).findByIdentifier(params.id);
 		if (!item.exists()) {
 			// Not Found
-			WebResponse.create(response).setStatus(404);
+			WebResponse.create(context).with(response).setStatus(404);
 			return;
 		}
 
@@ -41,12 +41,12 @@ import api.http.WebResponse;
 				item = item.versionHistory.getVersion(params.version).frozen;
 			} catch (Throwable ex) {
 				// Not Found
-				WebResponse.create(response).setStatus(404);
+				WebResponse.create(context).with(response).setStatus(404);
 				return;
 			}
 		}
 
-		def resp = WebResponse.create(response);
+		def resp = WebResponse.create(context).with(response);
 		if (params.isAttachment) {
 			resp.setAttachment(item.name);
 		}
@@ -58,7 +58,7 @@ import api.http.WebResponse;
 			.writePartial(item.contentAsStream, params.range);
 	} catch (Throwable ex) {
 		log.error(ex.message, ex);
-		WebResponse.create(response).sendError(ex);
+		WebResponse.create(context).with(response).sendError(ex);
 		return;
 	}
 }();

@@ -12,13 +12,13 @@ import api.http.WebResponse;
 	}
 
 	try {
-		def params = WebRequest.create(request).parseRequest();
+		def params = WebRequest.create(context).with(request).parseRequest();
 		def item;
 		if (params.id?.trim()) {
 			def itemId = params.id?.trim();
 			item = Item.create(context).findByIdentifier(itemId);
 			// OK
-			WebResponse.create(response)
+			WebResponse.create(context).with(response)
 				.setStatus(200)
 				.setContentType("application/json");
 			out.print(item.toJson());
@@ -28,13 +28,13 @@ import api.http.WebResponse;
 			item = Item.create(context).findByPath(itemPath);
 		} else {
 			// Bad Request
-			WebResponse.create(response).setStatus(400);
+			WebResponse.create(context).with(response).setStatus(400);
 			return;
 		}
 
 		if (!item.exists()) {
 			// OK
-			WebResponse.create(response)
+			WebResponse.create(context).with(response)
 				.setStatus(200)
 				.setContentType("application/json");
 			out.print(item.toJson());
@@ -46,19 +46,19 @@ import api.http.WebResponse;
 				item = item.versionHistory.getVersion(params.version).frozen;
 			} catch (Throwable ex) {
 				// Not Found
-				WebResponse.create(response).setStatus(404);
+				WebResponse.create(context).with(response).setStatus(404);
 				return;
 			}
 		}
 
 		// OK
-		WebResponse.create(response)
+		WebResponse.create(context).with(response)
 			.setStatus(200)
 			.setContentType("application/json");
 		out.print(item.toJson());
 		return;
 	} catch (Throwable ex) {
 		log.error(ex.message, ex);
-		WebResponse.create(response).sendError(ex);
+		WebResponse.create(context).with(response).sendError(ex);
 	}
 }();

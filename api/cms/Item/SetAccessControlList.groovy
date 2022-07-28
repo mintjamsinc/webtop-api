@@ -11,7 +11,7 @@ import api.http.WebResponse;
 		return;
 	}
 
-	def params = WebRequest.create(request).parseRequest();
+	def params = WebRequest.create(context).with(request).parseRequest();
 	def identifier = params.id?.trim();
 	if (!identifier || params.acl == null) {
 		// Bad Request
@@ -58,11 +58,11 @@ import api.http.WebResponse;
 		repositorySession.commit();
 
 		// OK
-		WebResponse.create(response).setStatus(200);
+		WebResponse.create(context).with(response).setStatus(200);
 		return;
 	} catch (Throwable ex) {
 		log.error(ex.message, ex);
-		WebResponse.create(response).sendError(ex);
+		WebResponse.create(context).with(response).sendError(ex);
 	} finally {
 		try {
 			repositorySession.rollback();

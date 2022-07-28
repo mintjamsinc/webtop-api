@@ -13,7 +13,7 @@ import api.http.WebResponse;
 
 	def params = [
 		"id": WebAPI.getParameter("id").defaultString(),
-		"range": WebRequest.create(request).range
+		"range": WebRequest.create(context).with(request).range
 	];
 	if (!params.id) {
 		// Bad Request
@@ -44,6 +44,6 @@ import api.http.WebResponse;
 			.writePartial(authorizable.getStream("mi:photo"), params.range);
 	} catch (Throwable ex) {
 		log.error(ex.message, ex);
-		WebResponse.create(response).sendError(ex);
+		WebResponse.create(context).with(response).sendError(ex);
 	}
 }();

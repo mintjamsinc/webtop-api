@@ -14,13 +14,13 @@ import api.http.WebResponse;
 	try {
 		mu.initiate();
 		// OK
-		WebResponse.create(response)
+		WebResponse.create(context).with(response)
 			.setStatus(201)
 			.setContentType("application/json");
 		out.print(mu.toJson());
 	} catch (Throwable ex) {
 		log.error(ex.message, ex);
-		WebResponse.create(response).sendError(ex);
+		WebResponse.create(context).with(response).sendError(ex);
 
 		try {
 			mu.deleteFile();

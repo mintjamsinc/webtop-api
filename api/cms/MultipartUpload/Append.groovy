@@ -12,17 +12,17 @@ import api.http.WebResponse;
 	}
 
 	try {
-		def params = WebRequest.create(request).parseRequest();
+		def params = WebRequest.create(context).with(request).parseRequest();
 		def uploadID = params.id?.trim();
 		def mu = MultipartUpload.create(context).resolve(uploadID);
 		mu.append(params.data?.trim());
 		// OK
-		WebResponse.create(response)
+		WebResponse.create(context).with(response)
 			.setStatus(200)
 			.setContentType("application/json");
 		out.print(mu.toJson());
 	} catch (Throwable ex) {
 		log.error(ex.message, ex);
-		WebResponse.create(response).sendError(ex);
+		WebResponse.create(context).with(response).sendError(ex);
 	}
 }();

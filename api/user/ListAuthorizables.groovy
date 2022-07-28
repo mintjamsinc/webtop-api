@@ -14,7 +14,7 @@ import api.util.JSON;
 	}
 
 	try {
-		def params = WebRequest.create(request).parseRequest();
+		def params = WebRequest.create(context).with(request).parseRequest();
 
 		if (params.identifiers != null) {
 			def resp = [
@@ -23,14 +23,14 @@ import api.util.JSON;
 			];
 
 			for (id in params.identifiers) {
-				def e = Authorizable.create(context).findByName(id);
+				def e = Authorizable.create(context).with(id);
 				if (e.exists()) {
 					resp.authorizables.add(e.toObject());
 				}
 			}
 
 			// OK
-			WebResponse.create(response)
+			WebResponse.create(context).with(response)
 				.setStatus(200)
 				.setContentType("application/json");
 			out.print(JSON.stringify(resp));
@@ -44,41 +44,32 @@ import api.util.JSON;
 			"authorizables": []
 		];
 
-		def builder = repositorySession.userManager.createQueryBuilder();
-		if (!params.selector) {
-			builder.setSelector(new String[0]);
-		} else {
-			builder.setSelector(params.selector);
+		def stmt = "/jcr:root/home//element(profile,nt:file)";
+		def condition = "";
+		if (params.selector) {
+			if (condition) {
+				condition += " and ";
+			}
+			condition += "@isGroup = " + (params.selector == "groups");
 		}
-		def conditions = [];
 		if (params.q) {
-			Text.split(params.q, " ").each { q ->
-				conditions.add(builder.or(
-					builder.like("@rep:principalName", "%" + q + "%"),
-					builder.contains("@rep:fullName", q)
-				));
+			if (condition) {
+				condition += " and ";
 			}
-		}
-		def condition = null;
-		conditions.reverse().each { c ->
-			if (!condition) {
-				condition = c;
-				return;
-			}
-
-			condition = builder.and(condition, c);
+			condition += "jcr:contains(.,'" + params.q + "')";
 		}
 		if (condition) {
-			builder.setCondition(condition);
+			stmt += "[" + condition + "]";
 		}
-		builder.setSortOrder("@rep:fullName", true, true);
+		stmt += " order by @fullName, @identifier";
 
-		def i = builder.build().offset(offset).limit(limit + 1).execute();
-		while (i.hasNext()) {
+		def result = repositorySession.workspace.queryManager.createQuery(stmt, "xpath").offset(0).limit(1000).execute();
+		for (r in result.resources) {
 			if (resp.authorizables.size() < limit) {
-				resp.authorizables.add(Authorizable.create(context).with(i.next()).toObject());
+				resp.authorizables.add(Authorizable.create(context).with(r.getProperty("identifier").getString()).toObject());
 			} else {
 				resp.nextOffset = offset + limit;
+				break;
 			}
 		}
 
@@ -88,13 +79,13 @@ import api.util.JSON;
 		}
 
 		// OK
-		WebResponse.create(response)
+		WebResponse.create(context).with(response)
 			.setStatus(200)
 			.setContentType("application/json");
 		out.print(JSON.stringify(resp));
 		return;
 	} catch (Throwable ex) {
 		log.error(ex.message, ex);
-		WebResponse.create(response).sendError(ex);
+		WebResponse.create(context).with(response).sendError(ex);
 	}
 }();

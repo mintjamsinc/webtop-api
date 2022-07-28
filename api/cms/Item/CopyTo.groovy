@@ -11,7 +11,7 @@ import api.http.WebResponse;
 		return;
 	}
 
-	def params = WebRequest.create(request).parseRequest();
+	def params = WebRequest.create(context).with(request).parseRequest();
 	def identifier = params.id?.trim();
 	def path = params.path?.trim();
 	if (!identifier || !path) {
@@ -24,7 +24,7 @@ import api.http.WebResponse;
 		def item = Item.create(context).findByIdentifier(identifier);
 		if (!item.exists()) {
 			// Not Found
-			WebResponse.create(response).setStatus(404);
+			WebResponse.create(context).with(response).setStatus(404);
 			return;
 		}
 
@@ -62,12 +62,12 @@ import api.http.WebResponse;
 		}
 
 		// No Content
-		WebResponse.create(response).setStatus(existsDestination ? 200 : 201);
+		WebResponse.create(context).with(response).setStatus(existsDestination ? 200 : 201);
 		out.print(destItem.toJson());
 		return;
 	} catch (Throwable ex) {
 		log.error(ex.message, ex);
-		WebResponse.create(response).sendError(ex);
+		WebResponse.create(context).with(response).sendError(ex);
 	} finally {
 		try {
 			repositorySession.rollback();

@@ -13,30 +13,30 @@ import api.util.YAML;
 	}
 
 	try {
-		def params = WebRequest.create(request).parseRequest();
+		def params = WebRequest.create(context).with(request).parseRequest();
 		def identifier = params.id?.trim();
 		if (!identifier) {
 			// Bad Request
-			WebResponse.create(response).setStatus(400);
+			WebResponse.create(context).with(response).setStatus(400);
 			return;
 		}
 
 		def item = Item.create(context).findByIdentifier(identifier);
 		if (!item.exists()) {
 			// Not Found
-			WebResponse.create(response).setStatus(404);
+			WebResponse.create(context).with(response).setStatus(404);
 			return;
 		}
 		if (!item.contains("web.template")) {
 			// Not Found
-			WebResponse.create(response).setStatus(404);
+			WebResponse.create(context).with(response).setStatus(404);
 			return;
 		}
 
 		def tmpl = item.getTemplate(params.prefix?.trim(), params.suffix?.trim());
 		if (!tmpl) {
 			// Not Found
-			WebResponse.create(response).setStatus(404);
+			WebResponse.create(context).with(response).setStatus(404);
 			return;
 		}
 
@@ -50,6 +50,6 @@ import api.util.YAML;
 		}
 	} catch (Throwable ex) {
 		log.error(ex.message, ex);
-		WebResponse.create(response).sendError(ex);
+		WebResponse.create(context).with(response).sendError(ex);
 	}
 }();

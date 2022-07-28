@@ -12,7 +12,7 @@ import api.http.WebResponse;
 	}
 
 	try {
-		def params = WebRequest.create(request).parseRequest();
+		def params = WebRequest.create(context).with(request).parseRequest();
 		def processDefinitionId = params.id?.trim();
 		def pd = ProcessDefinition.create(context).findByIdentifier(processDefinitionId);
 		if (!pd.exists()) {
@@ -29,9 +29,9 @@ import api.http.WebResponse;
 		pd.remove();
 
 		// No Content
-		WebResponse.create(response).setStatus(204);
+		WebResponse.create(context).with(response).setStatus(204);
 	} catch (Throwable ex) {
 		log.error(ex.message, ex);
-		WebResponse.create(response).sendError(ex);
+		WebResponse.create(context).with(response).sendError(ex);
 	}
 }();

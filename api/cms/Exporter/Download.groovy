@@ -13,7 +13,7 @@ import api.http.WebResponse;
 
 	def params = [
 		"identifier": WebAPI.getParameter("identifier").defaultString(),
-		"range": WebRequest.create(request).range
+		"range": WebRequest.create(context).with(request).range
 	];
 	if (!params.identifier) {
 		// Bad Request
@@ -31,14 +31,14 @@ import api.http.WebResponse;
 		def identifier = params.identifier?.trim();
 		if (!identifier) {
 			// Bad Request
-			WebResponse.create(response).setStatus(400);
+			WebResponse.create(context).with(response).setStatus(400);
 			return;
 		}
 
 		exp.resolve(identifier);
 		if (!exp.exists()) {
 			// Not Found
-			WebResponse.create(response).setStatus(404);
+			WebResponse.create(context).with(response).setStatus(404);
 			return;
 		}
 
@@ -54,6 +54,6 @@ import api.http.WebResponse;
 			.writePartial(exp.file.newInputStream(), params.range);
 	} catch (Throwable ex) {
 		log.error(ex.message, ex);
-		WebResponse.create(response).sendError(ex);
+		WebResponse.create(context).with(response).sendError(ex);
 	}
 }();

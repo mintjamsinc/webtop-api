@@ -13,24 +13,24 @@ import api.http.WebResponse;
 
 	def crawler = Crawler.create(context);
 	try {
-		def params = WebRequest.create(request).parseRequest();
+		def params = WebRequest.create(context).with(request).parseRequest();
 		def statement = params.statement?.trim();
 		def language = params.language?.trim();
 		if (!statement) {
 			// Bad Request
-			WebResponse.create(response).setStatus(400);
+			WebResponse.create(context).with(response).setStatus(400);
 			return;
 		}
 
 		crawler.start(statement, language);
 
 		// Created
-		WebResponse.create(response)
+		WebResponse.create(context).with(response)
 			.setStatus(201)
 			.setContentType("application/json");
 		out.print(crawler.toJson());
 	} catch (Throwable ex) {
 		log.error(ex.message, ex);
-		WebResponse.create(response).sendError(ex);
+		WebResponse.create(context).with(response).sendError(ex);
 	}
 }();

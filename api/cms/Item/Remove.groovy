@@ -11,7 +11,7 @@ import api.http.WebResponse;
 		return;
 	}
 
-	def params = WebRequest.create(request).parseRequest();
+	def params = WebRequest.create(context).with(request).parseRequest();
 	def identifier = params.id?.trim();
 	if (!identifier) {
 		// Bad Request
@@ -23,7 +23,7 @@ import api.http.WebResponse;
 		def item = Item.create(context).findByIdentifier(identifier);
 		if (!item.exists()) {
 			// Not Found
-			WebResponse.create(response).setStatus(404);
+			WebResponse.create(context).with(response).setStatus(404);
 			return;
 		}
 
@@ -31,11 +31,11 @@ import api.http.WebResponse;
 		repositorySession.commit();
 
 		// No Content
-		WebResponse.create(response).setStatus(204);
+		WebResponse.create(context).with(response).setStatus(204);
 		return;
 	} catch (Throwable ex) {
 		log.error(ex.message, ex);
-		WebResponse.create(response).sendError(ex);
+		WebResponse.create(context).with(response).sendError(ex);
 	} finally {
 		try {
 			repositorySession.rollback();

@@ -28,17 +28,17 @@ import api.util.JSON;
 
 def prepare() {
 	try {
-		def params = WebRequest.create(request).parseRequest();
+		def params = WebRequest.create(context).with(request).parseRequest();
 		if (!params.paths || params.paths.isEmpty()) {
 			// Bad Request
-			WebResponse.create(response).setStatus(400);
+			WebResponse.create(context).with(response).setStatus(400);
 			return;
 		}
 
 		def exp = Exporter.create(context).prepare(params.paths as String[], !!params.noMetadata as boolean);
 
 		// Created
-		WebResponse.create(response)
+		WebResponse.create(context).with(response)
 			.setStatus(201)
 			.setContentType("application/json");
 		out.print(exp.toJson());
@@ -63,7 +63,7 @@ def execute() {
 			return;
 		}
 
-		WebResponse.create(response).setContentType("text/event-stream");
+		WebResponse.create(context).with(response).setContentType("text/event-stream");
 		exp.setStatusMonitor([
 			setStatus: { status ->
 				out.print("data: " + JSON.stringify(status) + "\n\n");

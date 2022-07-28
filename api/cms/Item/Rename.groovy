@@ -11,7 +11,7 @@ import api.http.WebResponse;
 		return;
 	}
 
-	def params = WebRequest.create(request).parseRequest();
+	def params = WebRequest.create(context).with(request).parseRequest();
 	def identifier = params.id?.trim();
 	if (!identifier) {
 		// Bad Request
@@ -29,14 +29,14 @@ import api.http.WebResponse;
 		def item = Item.create(context).findByIdentifier(identifier);
 		if (!item.exists()) {
 			// Not Found
-			WebResponse.create(response).setStatus(404);
+			WebResponse.create(context).with(response).setStatus(404);
 			return;
 		}
 
 		def destItem = item.parent.getItem(newName);
 		if (destItem.exists()) {
 			// Conflict
-			WebResponse.create(response).setStatus(409);
+			WebResponse.create(context).with(response).setStatus(409);
 			return;
 		}
 
@@ -45,14 +45,14 @@ import api.http.WebResponse;
 		repositorySession.commit();
 
 		// OK
-		WebResponse.create(response)
+		WebResponse.create(context).with(response)
 			.setStatus(200)
 			.setContentType("application/json");
 		out.print(item.toJson());
 		return;
 	} catch (Throwable ex) {
 		log.error(ex.message, ex);
-		WebResponse.create(response).sendError(ex);
+		WebResponse.create(context).with(response).sendError(ex);
 	} finally {
 		try {
 			repositorySession.rollback();

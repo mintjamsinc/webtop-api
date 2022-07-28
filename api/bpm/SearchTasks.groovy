@@ -14,7 +14,7 @@ import api.util.JSON;
 	}
 
 	try {
-		def params = WebRequest.create(request).parseRequest();
+		def params = WebRequest.create(context).with(request).parseRequest();
 		def offset = (params.offset > 0) ? params.offset : 0;
 		def limit = (params.limit > 0) ? params.limit : 100;
 		def resp = [
@@ -124,12 +124,12 @@ import api.util.JSON;
 		}
 
 		// OK
-		WebResponse.create(response)
+		WebResponse.create(context).with(response)
 			.setStatus(200)
 			.setContentType("application/json");
 		out.print(JSON.stringify(resp));
 	} catch (Throwable ex) {
 		log.error(ex.message, ex);
-		WebResponse.create(response).sendError(ex);
+		WebResponse.create(context).with(response).sendError(ex);
 	}
 }();

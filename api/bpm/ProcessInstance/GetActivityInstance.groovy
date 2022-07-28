@@ -12,7 +12,7 @@ import api.http.WebResponse;
 	}
 
 	try {
-		def params = WebRequest.create(request).parseRequest();
+		def params = WebRequest.create(context).with(request).parseRequest();
 		def processInstanceId = params.id?.trim();
 		def pi = ProcessInstance.create(context).findByIdentifier(processInstanceId);
 		if (!pi.exists()) {
@@ -24,12 +24,12 @@ import api.http.WebResponse;
 		def ai = pi.activityInstance;
 
 		// OK
-		WebResponse.create(response)
+		WebResponse.create(context).with(response)
 			.setStatus(200)
 			.setContentType("application/json");
 		out.print(ai.toJson());
 	} catch (Throwable ex) {
 		log.error(ex.message, ex);
-		WebResponse.create(response).sendError(ex);
+		WebResponse.create(context).with(response).sendError(ex);
 	}
 }();

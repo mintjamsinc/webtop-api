@@ -29,7 +29,7 @@ import api.util.JSON;
 
 def prepare() {
 	try {
-		def params = WebRequest.create(request).parseRequest();
+		def params = WebRequest.create(context).with(request).parseRequest();
 		if (!params.path?.trim() || !params.uploadID?.trim()) {
 			// Bad Request
 			response.setStatus(400);
@@ -46,7 +46,7 @@ def prepare() {
 		def imp = Importer.create(context).prepare(params.path, mu.file);
 
 		// Created
-		WebResponse.create(response)
+		WebResponse.create(context).with(response)
 			.setStatus(201)
 			.setContentType("application/json");
 		out.print(imp.toJson());
@@ -71,7 +71,7 @@ def execute() {
 			return;
 		}
 
-		WebResponse.create(response).setContentType("text/event-stream");
+		WebResponse.create(context).with(response).setContentType("text/event-stream");
 		imp.setStatusMonitor([
 			setStatus: { status ->
 				out.print("data: " + JSON.stringify(status) + "\n\n");

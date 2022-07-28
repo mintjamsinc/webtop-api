@@ -12,7 +12,7 @@ import api.security.Authorizable;
 	}
 
 	try {
-		def params = WebRequest.create(request).parseRequest();
+		def params = WebRequest.create(context).with(request).parseRequest();
 		if (!params.id) {
 			// Bad Request
 			response.setStatus(400);
@@ -22,13 +22,13 @@ import api.security.Authorizable;
 		def authorizable = Authorizable.create(context).findByName(params.id);
 
 		// OK
-		WebResponse.create(response)
+		WebResponse.create(context).with(response)
 			.setStatus(200)
 			.setContentType("application/json");
 		out.print(authorizable.toJson());
 		return;
 	} catch (Throwable ex) {
 		log.error(ex.message, ex);
-		WebResponse.create(response).sendError(ex);
+		WebResponse.create(context).with(response).sendError(ex);
 	}
 }();

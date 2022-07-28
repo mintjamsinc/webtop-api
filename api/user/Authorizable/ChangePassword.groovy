@@ -12,7 +12,7 @@ import api.security.User;
 	}
 
 	try {
-		def params = WebRequest.create(request).parseRequest();
+		def params = WebRequest.create(context).with(request).parseRequest();
 		if (!params.id?.trim() || !params.newPassword?.trim()) {
 			// Bad Request
 			response.setStatus(400);
@@ -22,7 +22,7 @@ import api.security.User;
 		def user = User.create(context).findByName(params.id?.trim());
 		if (!user.exists()) {
 			// Not Found
-			WebResponse.create(response).setStatus(404);
+			WebResponse.create(context).with(response).setStatus(404);
 			return;
 		}
 
@@ -32,11 +32,11 @@ import api.security.User;
 		repositorySession.commit();
 
 		// No Content
-		WebResponse.create(response).setStatus(204);
+		WebResponse.create(context).with(response).setStatus(204);
 		return;
 	} catch (Throwable ex) {
 		log.error(ex.message, ex);
-		WebResponse.create(response).sendError(ex);
+		WebResponse.create(context).with(response).sendError(ex);
 	} finally {
 		try {
 			repositorySession.rollback();

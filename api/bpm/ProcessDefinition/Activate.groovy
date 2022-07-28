@@ -12,7 +12,7 @@ import api.http.WebResponse;
 	}
 
 	try {
-		def params = WebRequest.create(request).parseRequest();
+		def params = WebRequest.create(context).with(request).parseRequest();
 		def processDefinitionId = params.id?.trim();
 		def pd = ProcessDefinition.create(context).findByIdentifier(processDefinitionId);
 		if (!pd.exists()) {
@@ -29,12 +29,12 @@ import api.http.WebResponse;
 		pd.activate();
 
 		// OK
-		WebResponse.create(response)
+		WebResponse.create(context).with(response)
 			.setStatus(200)
 			.setContentType("application/json");
 		out.print(pd.toJson());
 	} catch (Throwable ex) {
 		log.error(ex.message, ex);
-		WebResponse.create(response).sendError(ex);
+		WebResponse.create(context).with(response).sendError(ex);
 	}
 }();

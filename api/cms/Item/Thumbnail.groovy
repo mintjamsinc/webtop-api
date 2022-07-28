@@ -15,7 +15,7 @@ import api.util.YAML;
 	def identifier = WebAPI.getParameter("id").defaultString().trim();
 	if (!identifier) {
 		// Bad Request
-		WebResponse.create(response).setStatus(400);
+		WebResponse.create(context).with(response).setStatus(400);
 		return;
 	}
 
@@ -23,7 +23,7 @@ import api.util.YAML;
 		def item = Item.create(context).findByIdentifier(identifier);
 		if (!item.exists()) {
 			// Not Found
-			WebResponse.create(response).setStatus(404);
+			WebResponse.create(context).with(response).setStatus(404);
 			return;
 		}
 
@@ -50,10 +50,10 @@ import api.util.YAML;
 			}
 
 			// Not Found
-			WebResponse.create(response).setStatus(404);
+			WebResponse.create(context).with(response).setStatus(404);
 		}
 	} catch (Throwable ex) {
 		log.error(ex.message, ex);
-		WebResponse.create(response).sendError(ex);
+		WebResponse.create(context).with(response).sendError(ex);
 	}
 }();

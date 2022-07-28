@@ -14,7 +14,7 @@ import api.util.JSON;
 	}
 
 	try {
-		def params = WebRequest.create(request).parseRequest();
+		def params = WebRequest.create(context).with(request).parseRequest();
 		def item;
 		if (params.id?.trim()) {
 			item = Item.create(context).findByIdentifier(params.id?.trim());
@@ -24,13 +24,13 @@ import api.util.JSON;
 
 		if (!item) {
 			// Bad Request
-			WebResponse.create(response).setStatus(400);
+			WebResponse.create(context).with(response).setStatus(400);
 			return;
 		}
 
 		if (!item.exists()) {
 			// Not Found
-			WebResponse.create(response).setStatus(404);
+			WebResponse.create(context).with(response).setStatus(404);
 			return;
 		}
 
@@ -38,27 +38,17 @@ import api.util.JSON;
 		def limit = (params.limit > 0) ? params.limit : 100;
 		def resp = [
 			"nextOffset": -1,
-			"items": [],
-			"total": 0
+			"items": []
 		];
 
-		def stmt = "/jcr:root";
-		if (item.path != "/") {
-			stmt += item.path;
+		def i = item.list();
+		if (offset > 0) {
+			i.skip(offset);
 		}
-		stmt += "/*";
-		stmt += " order by @jcr:path";
-
-		def result = Search.create(context).execute([
-			"language": "XPath",
-			"statement": stmt,
-			"offset": offset,
-			"limit": limit
-		]).toObject();
-
-		resp.total = result.total;
-		resp.items = result.items;
-		if (result.hasMore) {
+		while (i.hasNext() && resp.items.size() < limit) {
+			resp.items.add(i.next().toObject());
+		}
+		if (i.hasNext()) {
 			resp.nextOffset = offset + resp.items.size();
 		}
 
@@ -68,13 +58,13 @@ import api.util.JSON;
 		}
 
 		// OK
-		WebResponse.create(response)
+		WebResponse.create(context).with(response)
 			.setStatus(200)
 			.setContentType("application/json");
 		out.print(JSON.stringify(resp));
 		return;
 	} catch (Throwable ex) {
 		log.error(ex.message, ex);
-		WebResponse.create(response).sendError(ex);
+		WebResponse.create(context).with(response).sendError(ex);
 	}
 }();

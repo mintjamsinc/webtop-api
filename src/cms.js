@@ -385,7 +385,12 @@ export class PreviewURLBuilder {
 			options = {};
 		}
 		if (!options.urlPrefix) {
-			options.urlPrefix = '/bin/cms.cgi';
+			let names = new URL(window.location.href).pathname.split('/');
+			if (names.length > 3) {
+				options.urlPrefix = '/' + names[1] + '/' + names[2] + '/' + names[3];
+			} else {
+				options.urlPrefix = '/bin/cms.cgi';
+			}
 		}
 		this.$options = options;
 		this.$item = item;

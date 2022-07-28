@@ -12,7 +12,7 @@ import api.security.otp.TOTP;
 	}
 
 	try {
-		def params = WebRequest.create(request).parseRequest();
+		def params = WebRequest.create(context).with(request).parseRequest();
 		if (!params.secret?.trim() || !params.code?.trim()) {
 			// Bad Request
 			response.setStatus(400);
@@ -33,9 +33,9 @@ import api.security.otp.TOTP;
 		}
 
 		// OK
-		WebResponse.create(response).setStatus(200);
+		WebResponse.create(context).with(response).setStatus(200);
 	} catch (Throwable ex) {
 		log.error(ex.message, ex);
-		WebResponse.create(response).sendError(ex);
+		WebResponse.create(context).with(response).sendError(ex);
 	}
 }();
