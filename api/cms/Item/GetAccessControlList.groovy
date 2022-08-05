@@ -65,7 +65,7 @@ import api.util.JSON;
 				acl.acl.add(AccessControlEntry.create(context).with(ace).toObject());
 
 				if (!resp.authorizables[ace.principal.name]) {
-					def a = Authorizable.create(context).findByName(ace.principal.name);
+					def a = Authorizable.create(context).with(ace.principal);
 					if (a.exists()) {
 						resp.authorizables[ace.principal.name] = a.toObject();
 					}
