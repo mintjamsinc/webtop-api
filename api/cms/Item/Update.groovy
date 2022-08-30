@@ -127,6 +127,8 @@ import api.http.WebResponse;
 			item.calculate();
 		}
 
+		repositorySession.commit();
+
 		if (!item.isCollection()) {
 			if (params.versionControl != null && params.versionControl) {
 				if (item.isVersionControlled()) {
@@ -187,8 +189,6 @@ import api.http.WebResponse;
 				}
 			}
 		}
-
-		repositorySession.commit();
 
 		// OK
 		WebResponse.create(context).with(response)
