@@ -16,7 +16,7 @@ import api.util.JSON;
 
 	try {
 		def params = WebRequest.create(context).with(request).parseRequest();
-		def item = Item.create(context).findByPath("/WEB-INF/facets");
+		def item = Item.create(context).findByPath("/content/WEB-INF/facets");
 
 		def offset = (params.offset > 0) ? params.offset : 0;
 		def limit = (params.limit > 0) ? params.limit : 2000;
