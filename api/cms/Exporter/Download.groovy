@@ -44,7 +44,8 @@ import api.http.WebResponse;
 
 		// OK
 		WebResponse
-			.create(response)
+			.create(context)
+			.with(response)
 			.setStatus(200)
 			.setAttachment(exp.status.filename)
 			.disableContentCache()
