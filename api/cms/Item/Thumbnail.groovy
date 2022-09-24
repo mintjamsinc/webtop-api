@@ -30,7 +30,8 @@ import api.util.YAML;
 		if (item.contains("mi:thumbnail")) {
 			item.getStream("mi:thumbnail").withCloseable { stream ->
 				WebResponse
-					.create(response)
+					.create(context)
+					.with(response)
 					.setStatus(200)
 					.enableContentCache()
 					.setContentType(item.contentType)
@@ -40,7 +41,8 @@ import api.util.YAML;
 			if (item.contentType.startsWith("image/")) {
 				item.contentAsStream.withCloseable { stream ->
 					WebResponse
-						.create(response)
+						.create(context)
+						.with(response)
 						.setStatus(200)
 						.enableContentCache()
 						.setContentType(item.contentType)
