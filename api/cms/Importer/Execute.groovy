@@ -71,7 +71,7 @@ def execute() {
 			return;
 		}
 
-		WebResponse.create(context).with(response).setContentType("text/event-stream");
+		WebResponse.create(context).with(response).setContentType("text/event-stream").setCharacterEncoding("UTF-8");
 		imp.setStatusMonitor([
 			setStatus: { status ->
 				out.print("data: " + JSON.stringify(status) + "\n\n");
