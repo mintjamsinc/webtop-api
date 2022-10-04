@@ -1,10 +1,10 @@
 /* Copyright (c) 2021 MintJams Inc. Licensed under MIT License. */
 
 import * as user from "./user";
+import * as util from "./util";
 import CryptoJS from 'crypto-js';
 
-let _baseUrl = window.location.href;
-_baseUrl = _baseUrl.substring(0, _baseUrl.lastIndexOf('/')) + '/api';
+let _baseUrl = util.Env.getBaseUrl();
 let _axios;
 
 export class AuthClient {
@@ -19,6 +19,13 @@ export class AuthClient {
 		return _axios.post(_baseUrl + '/auth/Authenticate.groovy', params).then(function(response) {
 			return response.data;
 		});
+	}
+
+	logout(params) {
+		if (!params) {
+			params = {};
+		}
+		return _axios.post(_baseUrl + '/auth/Logout.groovy', params);
 	}
 
 	getUser(params) {
@@ -38,7 +45,7 @@ export class AuthClient {
 				'keySize': 128 / 32,
 				'hasher': CryptoJS.algo.SHA256,
 			});
-			return new User(response.data);
+			return new user.User(response.data);
 		});
 	}
 
@@ -66,17 +73,5 @@ export class AuthClient {
 			'padding': CryptoJS.pad.Pkcs7,
 		});
 		return decrypted.toString(CryptoJS.enc.Utf8);
-	}
-}
-
-export class User extends user.User {
-	changePassword(params) {
-		let instance = this;
-		if (!params) {
-			params = {};
-		}
-		return _axios.post(_baseUrl + '/auth/Authorizable/ChangePassword.groovy', params).then(function() {
-			return instance;
-		});
 	}
 }

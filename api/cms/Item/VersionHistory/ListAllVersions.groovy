@@ -52,7 +52,7 @@ import api.util.JSON;
 			resp.versions.add(version.toObject());
 
 			if (!resp.authorizables[version.frozen.lastModifiedBy]) {
-				def a = Authorizable.create(context).with(version.frozen.lastModifiedBy);
+				def a = Authorizable.create(context).with(context.session.principalProvider.getUserPrincipal(version.frozen.lastModifiedBy));
 				if (a.exists()) {
 					resp.authorizables[version.frozen.lastModifiedBy] = a.toObject();
 				}

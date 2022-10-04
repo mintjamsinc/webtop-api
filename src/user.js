@@ -1,11 +1,11 @@
 /* Copyright (c) 2021 MintJams Inc. Licensed under MIT License. */
 
+import * as util from "./util";
 import md5 from 'crypto-js/md5';
 import sha256 from 'crypto-js/sha256';
 import { v4 as uuidv4 } from 'uuid';
 
-let _baseUrl = window.location.href;
-_baseUrl = _baseUrl.substring(0, _baseUrl.lastIndexOf('/')) + '/api';
+let _baseUrl = util.Env.getBaseUrl();
 let _axios;
 
 export class UserClient {
