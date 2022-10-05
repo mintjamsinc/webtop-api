@@ -30,12 +30,12 @@ import api.http.WebResponse;
 		def attributes;
 		try {
 			def principal;
-			if (id.endsWith("@group")) {
-				principal = repositorySession.userManager.getGroupPrincipal(id.substring(0, id.lastIndexOf("@")));
-			} else if (id.endsWith("@user")) {
-				principal = repositorySession.userManager.getUserPrincipal(id.substring(0, id.lastIndexOf("@")));
+			if (params.id.endsWith("@group")) {
+				principal = repositorySession.userManager.getGroupPrincipal(id.substring(0, params.id.lastIndexOf("@")));
+			} else if (params.id.endsWith("@user")) {
+				principal = repositorySession.userManager.getUserPrincipal(id.substring(0, params.id.lastIndexOf("@")));
 			} else {
-				principal = repositorySession.userManager.getUserPrincipal(id);
+				principal = repositorySession.userManager.getUserPrincipal(params.id);
 			}
 			def authorizable = Authorizable.create(context).with(principal);
 			if (!authorizable.exists()) {
