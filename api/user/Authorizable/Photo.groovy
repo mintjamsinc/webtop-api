@@ -58,7 +58,8 @@ import org.mintjams.jcr.security.UnknownUserPrincipal;
 		}
 
 		WebResponse
-			.create(response)
+			.create(context)
+			.with(response)
 			.setStatus(200)
 			.enableContentCache()
 			.setContentType(attributes.getAttribute("mi:photoType"))

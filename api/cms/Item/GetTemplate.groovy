@@ -42,7 +42,8 @@ import api.util.YAML;
 
 		tmpl.item.contentAsStream.withCloseable { stream ->
 			WebResponse
-				.create(response)
+				.create(context)
+				.with(response)
 				.setStatus(200)
 				.enableContentCache()
 				.setContentType(tmpl.item.contentType)
