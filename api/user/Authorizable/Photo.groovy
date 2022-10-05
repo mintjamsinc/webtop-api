@@ -31,11 +31,11 @@ import api.http.WebResponse;
 		try {
 			def principal;
 			if (params.id.endsWith("@group")) {
-				principal = repositorySession.userManager.getGroupPrincipal(params.id.substring(0, params.id.lastIndexOf("@")));
+				principal = repositorySession.principalProvider.getGroupPrincipal(params.id.substring(0, params.id.lastIndexOf("@")));
 			} else if (params.id.endsWith("@user")) {
-				principal = repositorySession.userManager.getUserPrincipal(params.id.substring(0, params.id.lastIndexOf("@")));
+				principal = repositorySession.principalProvider.getUserPrincipal(params.id.substring(0, params.id.lastIndexOf("@")));
 			} else {
-				principal = repositorySession.userManager.getUserPrincipal(params.id);
+				principal = repositorySession.principalProvider.getUserPrincipal(params.id);
 			}
 			def authorizable = Authorizable.create(context).with(principal);
 			if (!authorizable.exists()) {
