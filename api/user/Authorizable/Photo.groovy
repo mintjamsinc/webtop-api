@@ -3,6 +3,7 @@
 import api.security.Authorizable;
 import api.http.WebRequest;
 import api.http.WebResponse;
+import org.mintjams.jcr.security.UnknownUserPrincipal;
 
 {->
 	if (repositorySession.isAnonymous()) {
@@ -27,9 +28,8 @@ import api.http.WebResponse;
 	}
 
 	try {
-		def attributes;
+		def principal;
 		try {
-			def principal;
 			if (params.id.endsWith("@group")) {
 				principal = repositorySession.principalProvider.getGroupPrincipal(params.id.substring(0, params.id.lastIndexOf("@")));
 			} else if (params.id.endsWith("@user")) {
@@ -37,19 +37,21 @@ import api.http.WebResponse;
 			} else {
 				principal = repositorySession.principalProvider.getUserPrincipal(params.id);
 			}
-			def authorizable = Authorizable.create(context).with(principal);
-			if (!authorizable.exists()) {
-				// Not Found
-				response.setStatus(404);
-				return;
-			}
-			attributes = authorizable.attributes;
-			if (!attributes.contains("mi:photo")) {
-				// Not Found
-				response.setStatus(404);
-				return;
-			}
 		} catch (Throwable ignore) {
+			def id = params.id;
+			if (id.endsWith("@group") || id.endsWith("@user")) {
+				id = id.substring(0, id.lastIndexOf("@"));
+			}
+			principal = new UnknownUserPrincipal(id);
+		}
+		def authorizable = Authorizable.create(context).with(principal);
+		if (!authorizable.exists()) {
+			// Not Found
+			response.setStatus(404);
+			return;
+		}
+		def attributes = authorizable.attributes;
+		if (!attributes.contains("mi:photo")) {
 			// Not Found
 			response.setStatus(404);
 			return;
