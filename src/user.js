@@ -118,8 +118,8 @@ export class Authorizable {
 		params.id = instance.$data.id;
 		return _axios.post(_baseUrl + '/user/Authorizable/Update.groovy', params).then(function(response) {
 			instance.$data = response.data;
-			if (typeof instance.$options.onUpdated == 'function') {
-				instance.$options.onUpdated(response.data);
+			if (typeof instance.onUpdated == 'function') {
+				instance.onUpdated(instance);
 			}
 			return instance;
 		});
@@ -189,7 +189,7 @@ export class Authorizable {
 		if (instance.hasProperty('mi:photo')) {
 			let modified;
 			try {
-				modified = new Date(instance.getProperty('lastModified'));
+				modified = new Date(instance.getProperty('lastModificationTime'));
 			} catch (ignore) {
 				modified = new Date();
 			}
@@ -201,12 +201,8 @@ export class Authorizable {
 }
 
 export class User extends Authorizable {
-	constructor(data, options) {
+	constructor(data) {
 		super(data);
-		this.$options = options;
-		if (!this.$options) {
-			this.$options = {};
-		}
 	}
 
 	changePassword(params) {
@@ -228,11 +224,7 @@ export class User extends Authorizable {
 }
 
 export class Group extends Authorizable {
-	constructor(data, options) {
+	constructor(data) {
 		super(data);
-		this.$options = options;
-		if (!this.$options) {
-			this.$options = {};
-		}
 	}
 }
