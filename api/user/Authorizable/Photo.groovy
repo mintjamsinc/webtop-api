@@ -61,7 +61,7 @@ import api.http.WebResponse;
 			.enableContentCache()
 			.setContentType(attributes.getAttribute("mi:photoType"))
 			.setContentLength(attributes.getDataLength("mi:photo"))
-			.setETag(attributes.getDate("lastModified").time as String)
+			.setETag(attributes.lastModified.time as String)
 			.writePartial(attributes.getStream("mi:photo"), params.range);
 	} catch (Throwable ex) {
 		log.error(ex.message, ex);
