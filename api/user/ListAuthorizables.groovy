@@ -23,10 +23,20 @@ import api.util.JSON;
 			];
 
 			for (id in params.identifiers) {
-				def e = Authorizable.create(context).with(id);
-				if (e.exists()) {
-					resp.authorizables.add(e.toObject());
-				}
+				try {
+					def principal;
+					if (id.endsWith("@group")) {
+						principal = repositorySession.userManager.getGroupPrincipal(id.substring(0, id.lastIndexOf("@")));
+					} else if (id.endsWith("@user")) {
+						principal = repositorySession.userManager.getUserPrincipal(id.substring(0, id.lastIndexOf("@")));
+					} else {
+						principal = repositorySession.userManager.getUserPrincipal(id);
+					}
+					def e = Authorizable.create(context).with(principal);
+					if (e.exists()) {
+						resp.authorizables.add(e.toObject());
+					}
+				} catch (Throwable ignore) {}
 			}
 
 			// OK
