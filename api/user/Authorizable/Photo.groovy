@@ -31,9 +31,9 @@ import api.http.WebResponse;
 		try {
 			def principal;
 			if (params.id.endsWith("@group")) {
-				principal = repositorySession.userManager.getGroupPrincipal(id.substring(0, params.id.lastIndexOf("@")));
+				principal = repositorySession.userManager.getGroupPrincipal(params.id.substring(0, params.id.lastIndexOf("@")));
 			} else if (params.id.endsWith("@user")) {
-				principal = repositorySession.userManager.getUserPrincipal(id.substring(0, params.id.lastIndexOf("@")));
+				principal = repositorySession.userManager.getUserPrincipal(params.id.substring(0, params.id.lastIndexOf("@")));
 			} else {
 				principal = repositorySession.userManager.getUserPrincipal(params.id);
 			}
