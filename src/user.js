@@ -160,6 +160,25 @@ export class Authorizable {
 		return p.value;
 	}
 
+	get identifier() {
+		let instance = this;
+		return instance.getProperty('identifier');
+	}
+
+	get isGroup() {
+		let instance = this;
+		return instance.getProperty('isGroup', false);
+	}
+
+	get fullName() {
+		let instance = this;
+		if (instance.getProperty('mi:fullName')) {
+			return instance.getProperty('mi:fullName');
+		}
+
+		return '';
+	}
+
 	get photoURL() {
 		let instance = this;
 		if (instance.getProperty('mi:gravatarEmail')) {
