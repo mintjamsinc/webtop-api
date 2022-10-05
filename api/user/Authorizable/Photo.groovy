@@ -62,7 +62,7 @@ import org.mintjams.jcr.security.UnknownUserPrincipal;
 			.with(response)
 			.setStatus(200)
 			.enableContentCache()
-			.setContentType(attributes.getAttribute("mi:photoType"))
+			.setContentType(attributes.getString("mi:photoType"))
 			.setContentLength(attributes.getDataLength("mi:photo"))
 			.setETag(attributes.lastModified.time as String)
 			.writePartial(attributes.getStream("mi:photo"), params.range);
