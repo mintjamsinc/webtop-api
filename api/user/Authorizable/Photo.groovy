@@ -27,8 +27,29 @@ import api.http.WebResponse;
 	}
 
 	try {
-		def authorizable = Authorizable.create(context).findByName(params.id);
-		if (!authorizable.exists() || !authorizable.contains("mi:photo")) {
+		def attributes;
+		try {
+			def principal;
+			if (id.endsWith("@group")) {
+				principal = repositorySession.userManager.getGroupPrincipal(id.substring(0, id.lastIndexOf("@")));
+			} else if (id.endsWith("@user")) {
+				principal = repositorySession.userManager.getUserPrincipal(id.substring(0, id.lastIndexOf("@")));
+			} else {
+				principal = repositorySession.userManager.getUserPrincipal(id);
+			}
+			def authorizable = Authorizable.create(context).with(principal);
+			if (!authorizable.exists()) {
+				// Not Found
+				response.setStatus(404);
+				return;
+			}
+			attributes = authorizable.attributes;
+			if (!attributes.contains("mi:photo")) {
+				// Not Found
+				response.setStatus(404);
+				return;
+			}
+		} catch (Throwable ignore) {
 			// Not Found
 			response.setStatus(404);
 			return;
@@ -38,10 +59,10 @@ import api.http.WebResponse;
 			.create(response)
 			.setStatus(200)
 			.enableContentCache()
-			.setContentType(authorizable.getBinaryType("mi:photo"))
-			.setContentLength(authorizable.getBinaryLength("mi:photo"))
-			.setETag(authorizable.getDate("lastModified").time as String)
-			.writePartial(authorizable.getStream("mi:photo"), params.range);
+			.setContentType(attributes.getAttribute("mi:photoType"))
+			.setContentLength(attributes.getDataLength("mi:photo"))
+			.setETag(attributes.getDate("lastModified").time as String)
+			.writePartial(attributes.getStream("mi:photo"), params.range);
 	} catch (Throwable ex) {
 		log.error(ex.message, ex);
 		WebResponse.create(context).with(response).sendError(ex);

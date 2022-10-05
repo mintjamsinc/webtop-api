@@ -48,7 +48,8 @@ import api.security.Authorizable;
 					mimeType = "application/octet-stream";
 				}
 
-				attributes.setAttribute("mi:photo", mu.file.bytes, mimeType);
+				attributes.setAttribute("mi:photo", mu.file.bytes);
+				attributes.setAttribute("mi:photoType", mimeType);
 				attributes.setAttribute("jcr:lastModified", new Date());
 			}
 
@@ -66,6 +67,8 @@ import api.security.Authorizable;
 		}
 
 		if (params.properties) {
+			params.properties.remove("identifier");
+			params.properties.remove("isGroup");
 			ItemHelper.create(context).with(attributes).importAttributes(params.properties);
 			attributes.setAttribute("jcr:lastModified", new Date());
 		}

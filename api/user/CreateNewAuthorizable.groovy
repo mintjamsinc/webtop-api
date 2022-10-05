@@ -70,7 +70,7 @@ import api.security.User;
 				appsFolder.mkdirs();
 				def acl = repositorySession.accessControlManager.getAccessControlList(appsFolder.path);
 				acl.clear();
-				acl.allow(webtopGroup.name, ["jcr:read", "rep:write"] as String[]);
+				acl.allow(webtopGroup.name, ["jcr:read", "jcr:write"] as String[]);
 			}
 			repositorySession.commit();
 		}
