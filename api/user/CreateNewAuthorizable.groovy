@@ -58,19 +58,12 @@ import api.security.User;
 			}
 
 			webtopGroup.addMembers([authorizable.name] as String[]);
-			def userFolder = Item.create(context).findByPath("/var/webtop/home/" + authorizable.name);
+			def userFolder = Item.create(context).findByPath("/home/" + authorizable.name);
 			if (!userFolder.exists()) {
 				userFolder.mkdirs();
 				def acl = repositorySession.accessControlManager.getAccessControlList(userFolder.path);
 				acl.clear();
 				acl.allow(authorizable.name, "jcr:all");
-			}
-			def appsFolder = Item.create(context).findByPath("/var/webtop/apps");
-			if (!appsFolder.exists()) {
-				appsFolder.mkdirs();
-				def acl = repositorySession.accessControlManager.getAccessControlList(appsFolder.path);
-				acl.clear();
-				acl.allow(webtopGroup.name, ["jcr:read", "jcr:write"] as String[]);
 			}
 			repositorySession.commit();
 		}

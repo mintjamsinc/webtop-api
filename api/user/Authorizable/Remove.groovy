@@ -30,7 +30,7 @@ import api.security.Authorizable;
 
 		authorizable.remove();
 
-		def userFolder = Item.create(context).findByPath("/var/webtop/home/" + params.id?.trim());
+		def userFolder = Item.create(context).findByPath("/home/" + params.id?.trim());
 		if (userFolder.exists()) {
 			userFolder.remove();
 		}

@@ -23,12 +23,12 @@ import api.security.Authorizable;
 			return;
 		}
 
-		repositorySession.userManager.registerIfNotExists(repositorySession.userPrincipal);
+		repositorySession.userManager.registerIfNotExists();
 
 		def authorizable = Authorizable.create(context).with(repositorySession.userPrincipal);
 		def attributes = authorizable.attributes;
 
-		if (params["mi:photo"]) {
+		if (params["mi:photo"] != null) {
 			if (params["mi:photo"].uploadID) {
 				def mu = MultipartUpload.create(context).resolve(params["mi:photo"].uploadID);
 				if (!mu.exists()) {
@@ -67,8 +67,23 @@ import api.security.Authorizable;
 		}
 
 		if (params.properties) {
+			def preferences = Item.create(context).findByPath("/home/" + repositorySession.userID + "/preferences");
+			if (!preferences.exists()) {
+				preferences.createNewFile();
+			}
+			if (params.properties["mi:backgroundImage"] != null) {
+				preferences.setAttribute("mi:backgroundImage", params.properties["mi:backgroundImage"].value);
+				preferences.setAttribute("jcr:lastModified", new Date());
+			}
+			if (params.properties["mi:backgroundSize"] != null) {
+				preferences.setAttribute("mi:backgroundSize", params.properties["mi:backgroundSize"].value);
+				preferences.setAttribute("jcr:lastModified", new Date());
+			}
+
 			params.properties.remove("identifier");
 			params.properties.remove("isGroup");
+			params.properties.remove("mi:backgroundImage");
+			params.properties.remove("mi:backgroundSize");
 			ItemHelper.create(context).with(attributes).importAttributes(params.properties);
 			attributes.setAttribute("jcr:lastModified", new Date());
 		}

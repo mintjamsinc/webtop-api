@@ -198,21 +198,6 @@ export class Authorizable {
 
 		return '';
 	}
-
-	get backgroundImageURL() {
-		let instance = this;
-		if (instance.hasProperty('mi:backgroundImage')) {
-			let modified;
-			try {
-				modified = new Date(instance.$data.lastModificationTime);
-			} catch (ignore) {
-				modified = new Date();
-			}
-			return _baseUrl + '/user/Authorizable/BackgroundImage.groovy?id=' + encodeURIComponent(instance.$data.id) + '&modified=' + modified.getTime();
-		}
-
-		return '';
-	}
 }
 
 export class User extends Authorizable {
