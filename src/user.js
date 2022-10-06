@@ -189,11 +189,26 @@ export class Authorizable {
 		if (instance.hasProperty('mi:photo')) {
 			let modified;
 			try {
-				modified = new Date(instance.getProperty('lastModificationTime'));
+				modified = new Date(instance.$data.lastModificationTime);
 			} catch (ignore) {
 				modified = new Date();
 			}
 			return _baseUrl + '/user/Authorizable/Photo.groovy?id=' + encodeURIComponent(instance.$data.id) + '&modified=' + modified.getTime();
+		}
+
+		return '';
+	}
+
+	get backgroundImageURL() {
+		let instance = this;
+		if (instance.hasProperty('mi:backgroundImage')) {
+			let modified;
+			try {
+				modified = new Date(instance.$data.lastModificationTime);
+			} catch (ignore) {
+				modified = new Date();
+			}
+			return _baseUrl + '/user/Authorizable/BackgroundImage.groovy?id=' + encodeURIComponent(instance.$data.id) + '&modified=' + modified.getTime();
 		}
 
 		return '';
@@ -203,18 +218,6 @@ export class Authorizable {
 export class User extends Authorizable {
 	constructor(data) {
 		super(data);
-	}
-
-	changePassword(params) {
-		let instance = this;
-		if (!params) {
-			params = {};
-		}
-		params.id = instance.$data.id;
-		return _axios.post(_baseUrl + '/user/Authorizable/ChangePassword.groovy', params
-		).then(function() {
-			return instance;
-		});
 	}
 
 	generateSecret() {
