@@ -72,29 +72,26 @@ import api.security.Authorizable;
 				preferences.createNewFile();
 			}
 
-			def props = [:];
-			if (params.properties instanceof List) {
-				for (e in params.properties) {
-					props[e.key] = e;
+			def protectedKeys = [
+				"identifier",
+				"isGroup"
+			];
+			def preferencesKeys = [
+				"mi:backgroundImage",
+				"mi:backgroundSize"
+			];
+
+			ItemHelper.create(context).with(preferences).importAttributes(params.properties.findAll {
+				return preferencesKeys.contains(it.key);
+			});
+			preferences.setAttribute("jcr:lastModified", new Date());
+
+			ItemHelper.create(context).with(attributes).importAttributes(params.properties.findAll {
+				if (protectedKeys.contains(it.key) || preferencesKeys.contains(it.key)) {
+					return false;
 				}
-			} else {
-				props = params.properties;
-			}
-
-			if (props["mi:backgroundImage"] != null) {
-				preferences.setAttribute("mi:backgroundImage", props["mi:backgroundImage"].value);
-				preferences.setAttribute("jcr:lastModified", new Date());
-			}
-			if (props["mi:backgroundSize"] != null) {
-				preferences.setAttribute("mi:backgroundSize", props["mi:backgroundSize"].value);
-				preferences.setAttribute("jcr:lastModified", new Date());
-			}
-
-			props.remove("identifier");
-			props.remove("isGroup");
-			props.remove("mi:backgroundImage");
-			props.remove("mi:backgroundSize");
-			ItemHelper.create(context).with(attributes).importAttributes(props);
+				return true;
+			});
 			attributes.setAttribute("jcr:lastModified", new Date());
 		}
 
