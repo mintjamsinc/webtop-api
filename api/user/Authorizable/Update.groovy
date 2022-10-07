@@ -66,25 +66,35 @@ import api.security.Authorizable;
 			}
 		}
 
-		if (params.properties) {
+		if (params.properties != null) {
 			def preferences = Item.create(context).findByPath("/home/" + repositorySession.userID + "/preferences");
 			if (!preferences.exists()) {
 				preferences.createNewFile();
 			}
-			if (params.properties["mi:backgroundImage"] != null) {
-				preferences.setAttribute("mi:backgroundImage", params.properties["mi:backgroundImage"].value);
+
+			def props = [:];
+			if (params.properties instanceof List) {
+				for (e in params.properties) {
+					props[e.key] = e;
+				}
+			} else {
+				props = params.properties;
+			}
+
+			if (props["mi:backgroundImage"] != null) {
+				preferences.setAttribute("mi:backgroundImage", props["mi:backgroundImage"].value);
 				preferences.setAttribute("jcr:lastModified", new Date());
 			}
-			if (params.properties["mi:backgroundSize"] != null) {
-				preferences.setAttribute("mi:backgroundSize", params.properties["mi:backgroundSize"].value);
+			if (props["mi:backgroundSize"] != null) {
+				preferences.setAttribute("mi:backgroundSize", props["mi:backgroundSize"].value);
 				preferences.setAttribute("jcr:lastModified", new Date());
 			}
 
-			params.properties.remove("identifier");
-			params.properties.remove("isGroup");
-			params.properties.remove("mi:backgroundImage");
-			params.properties.remove("mi:backgroundSize");
-			ItemHelper.create(context).with(attributes).importAttributes(params.properties);
+			props.remove("identifier");
+			props.remove("isGroup");
+			props.remove("mi:backgroundImage");
+			props.remove("mi:backgroundSize");
+			ItemHelper.create(context).with(attributes).importAttributes(props);
 			attributes.setAttribute("jcr:lastModified", new Date());
 		}
 
