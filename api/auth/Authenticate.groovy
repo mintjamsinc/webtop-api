@@ -14,34 +14,7 @@ import api.util.JSON;
 			"options": []
 		];
 
-		if (params.option == 'password') {
-			if (!params.username?.trim()) {
-				// Bad Request
-				response.setStatus(400);
-				return;
-			}
-
-			def conn = null;
-			try {
-				conn = SessionAPI.login(params);
-
-				def authorizable = conn.userManager.getAuthorizable(conn.userID);
-				if (authorizable.isGroup()) {
-					// Unauthorized
-					response.setStatus(401);
-					return;
-				}
-
-				def user = User.create(context).with(authorizable);
-				if (user.contains("mi:totpSecret")) {
-					resp.options.add("TOTP");
-				}
-			} finally {
-				try {
-					conn.logout();
-				} catch (Throwable ignore) {}
-			}
-		} else if (params.option == 'totp') {
+		if (params.option == 'totp') {
 			if (!params.code?.trim()) {
 				// Bad Request
 				response.setStatus(400);
