@@ -8,7 +8,7 @@ import api.http.WebResponse;
 import api.security.Authorizable;
 
 {->
-	if (repositorySession.isAnonymous()) {
+	if (repositorySession.isAuthorized()) {
 		// Unauthorized
 		response.setStatus(401);
 		return;

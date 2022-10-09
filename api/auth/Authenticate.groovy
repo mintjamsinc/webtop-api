@@ -51,7 +51,7 @@ import api.util.JSON;
 				repositorySession.commit();
 			}
 
-			def authenticatedFactors = request.getSession().getAttribute("org.mintjams.cms.security.auth.AuthenticatedFactors");
+			def authenticatedFactors = request.getSession().getAttribute("org.mintjams.cms.security.auth.AuthenticatedFactors")?.trim();
 			if (!authenticatedFactors) {
 				// Unauthorized
 				response.setStatus(401);

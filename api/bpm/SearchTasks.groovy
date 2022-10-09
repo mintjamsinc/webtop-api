@@ -7,7 +7,7 @@ import api.util.ISO8601;
 import api.util.JSON;
 
 {->
-	if (repositorySession.isAnonymous()) {
+	if (repositorySession.isAuthorized()) {
 		// Unauthorized
 		response.setStatus(401);
 		return;

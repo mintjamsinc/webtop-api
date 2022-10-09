@@ -8,7 +8,7 @@ import api.util.YAML;
 import api.util.JSON;
 
 {->
-	if (repositorySession.isAnonymous()) {
+	if (repositorySession.isAuthorized()) {
 		// Unauthorized
 		response.setStatus(401);
 		return;

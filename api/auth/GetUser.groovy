@@ -6,7 +6,7 @@ import api.security.Session;
 import api.security.User;
 
 {->
-	if (repositorySession.isAnonymous()) {
+	if (repositorySession.isAuthorized()) {
 		// Unauthorized
 		response.setStatus(401);
 		return;

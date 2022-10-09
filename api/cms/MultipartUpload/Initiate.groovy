@@ -4,7 +4,7 @@ import api.cms.MultipartUpload;
 import api.http.WebResponse;
 
 {->
-	if (repositorySession.isAnonymous()) {
+	if (repositorySession.isAuthorized()) {
 		// Unauthorized
 		response.setStatus(401);
 		return;
