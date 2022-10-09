@@ -48,7 +48,7 @@ import api.util.JSON;
 				return;
 			}
 
-			def user = User.create(context).with(repositorySession.userID);
+			def user = User.create(context).with(repositorySession.userPrincipal);
 			def secret = user.getString("mi:totpSecret")?.trim();
 			if (!secret) {
 				// Unauthorized
