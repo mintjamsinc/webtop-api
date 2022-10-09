@@ -6,7 +6,7 @@ import api.security.Authorizable;
 import org.mintjams.jcr.security.UnknownUserPrincipal;
 
 {->
-	if (repositorySession.isAuthorized()) {
+	if (!repositorySession.isAuthorized()) {
 		// Unauthorized
 		response.setStatus(401);
 		return;

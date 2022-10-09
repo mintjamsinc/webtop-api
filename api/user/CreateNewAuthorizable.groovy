@@ -8,7 +8,7 @@ import api.security.Group;
 import api.security.User;
 
 {->
-	if (repositorySession.isAuthorized()) {
+	if (!repositorySession.isAuthorized()) {
 		// Unauthorized
 		response.setStatus(401);
 		return;

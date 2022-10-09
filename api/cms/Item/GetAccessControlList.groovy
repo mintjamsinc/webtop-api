@@ -9,7 +9,7 @@ import api.security.Privilege;
 import api.util.JSON;
 
 {->
-	if (repositorySession.isAuthorized()) {
+	if (!repositorySession.isAuthorized()) {
 		// Unauthorized
 		response.setStatus(401);
 		return;
