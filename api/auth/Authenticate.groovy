@@ -49,7 +49,15 @@ import api.util.JSON;
 			}
 
 			def user = User.create(context).with(repositorySession.userPrincipal);
-			def secret = user.getString("mi:totpSecret")?.trim();
+			def attributes = user.attributes;
+			if (!attributes.exists()) {
+				// Unauthorized
+				response.setStatus(401);
+				return;
+
+			}
+
+			def secret = attributes.getString("mi:totpSecret")?.trim();
 			if (!secret) {
 				// Unauthorized
 				response.setStatus(401);
@@ -58,7 +66,7 @@ import api.util.JSON;
 
 			def code = params.code?.trim();
 			if (!TOTP.create(context).verify(secret, code)) {
-				def recoveryCodes = user.getStringArray("mi:totpRecoveryCodes") as List;
+				def recoveryCodes = attributes.getStringArray("mi:totpRecoveryCodes") as List;
 				if (!recoveryCodes.contains(code)) {
 					// Unauthorized
 					response.setStatus(401);
@@ -66,7 +74,7 @@ import api.util.JSON;
 				}
 
 				recoveryCodes.remove(code);
-				user.setAttribute("mi:totpRecoveryCodes", recoveryCodes as String[], true);
+				attributes.setAttribute("mi:totpRecoveryCodes", recoveryCodes as String[], true);
 				repositorySession.commit();
 			}
 
