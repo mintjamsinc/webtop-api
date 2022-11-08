@@ -162,12 +162,12 @@ export class Authorizable {
 
 	get identifier() {
 		let instance = this;
-		return instance.getProperty('identifier');
+		return instance.$data.id;
 	}
 
 	get isGroup() {
 		let instance = this;
-		return instance.getProperty('isGroup', false);
+		return instance.$data.isGroup;
 	}
 
 	get fullName() {
