@@ -54,33 +54,30 @@ import api.util.JSON;
 			"authorizables": []
 		];
 
-		def stmt = "/jcr:root/home//element(profile,nt:file)";
-		def condition = "";
+		def stmt = "";
+		def condition = "jcr:name = 'attributes' and @identifier";
 		if (params.selector) {
-			if (condition) {
-				condition += " and ";
-			}
-			condition += "@isGroup = " + (params.selector == "groups");
+			condition += " and @isGroup = " + (params.selector == "groups");
 		}
 		if (params.q) {
-			if (condition) {
-				condition += " and ";
-			}
-			condition += "jcr:contains(.,'" + params.q + "')";
+			condition += " and jcr:contains(.,'" + params.q + "')";
 		}
-		if (condition) {
-			stmt += "[" + condition + "]";
+		if (!condition) {
+			// Bad Request
+			response.setStatus(400);
+			return;
 		}
-		stmt += " order by @fullName, @identifier";
+		stmt += "[" + condition + "]";
+		stmt += " order by @mi:fullName, @identifier";
 
-		def result = repositorySession.workspace.queryManager.createQuery(stmt, "xpath").offset(0).limit(1000).execute();
-		for (r in result.resources) {
-			if (resp.authorizables.size() < limit) {
-				resp.authorizables.add(Authorizable.create(context).with(r.getProperty("identifier").getString()).toObject());
-			} else {
+		def i = repositorySession.userManager.search(stmt, offset, limit);
+		while (i.hasNext()) {
+			if (resp.authorizables.size() >= limit) {
 				resp.nextOffset = offset + limit;
 				break;
 			}
+
+			resp.authorizables.add(Authorizable.create(context).with(i.next()).toObject());
 		}
 
 		def requestTag = request.getHeader("X-Request-Tag");
