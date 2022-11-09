@@ -48,7 +48,7 @@ import api.util.JSON;
 		}
 
 		def offset = (params.offset > 0) ? params.offset : 0;
-		def limit = (params.limit > 0) ? params.limit : 100;
+		def limit = (params.limit > 0) ? params.limit : 20;
 		def resp = [
 			"nextOffset": -1,
 			"authorizables": []
