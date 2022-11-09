@@ -1,7 +1,5 @@
 // Copyright (c) 2021 MintJams Inc. Licensed under MIT License.
 
-import api.cms.Item;
-import api.cms.Search;
 import api.http.WebRequest;
 import api.http.WebResponse;
 import api.util.YAML;
@@ -16,7 +14,6 @@ import api.util.JSON;
 
 	try {
 		def params = WebRequest.create(context).with(request).parseRequest();
-		def item = Item.create(context).findByPath("/content/WEB-INF/facets");
 
 		def offset = (params.offset > 0) ? params.offset : 0;
 		def limit = (params.limit > 0) ? params.limit : 2000;
@@ -26,49 +23,26 @@ import api.util.JSON;
 			"total": 0
 		];
 
-		if (item && item.exists()) {
-			if (params.identifiers != null) {
-				params.identifiers.each { identifier ->
-					def e = item.getItem(identifier + ".yml");
-					if (!e.exists()) {
-						return;
-					}
+		if (params.identifiers != null) {
+			repositorySession.workspace.facetProvider.getFacets(params.identifiers as String[]).each { identifier, definition ->
+				resp.facetDefinitions.add(definition);
+				resp.total++;
+			}
+		} else {
+			def allFacets = repositorySession.workspace.facetProvider.allFacets;
+			resp.total = allFacets.size();
+			def skipNum = offset;
+			for (e in allFacets) {
+				if (skipNum > 0) {
+					skipNum--;
+					continue;
+				}
+				if (resp.facetDefinitions.size() >= limit) {
+					resp.nextOffset = offset + limit;
+					break;
+				}
 
-					try {
-						resp.facetDefinitions.add(YAML.parse(e.resource));
-						resp.total++;
-					} catch (Throwable ex) {
-						log.warn("Could not parse " + e.name, ex);
-					}
-				}
-			} else {
-				def stmt = "/jcr:root";
-				if (item.path != "/") {
-					stmt += XPath.encodeXML(item.path);
-				}
-				stmt += "/element(*,nt:file)[";
-				stmt += "jcr:like(fn:name(),'%.yml')";
-				stmt += "]";
-				stmt += " order by @jcr:path";
-
-				def result = Search.create(context).execute([
-					"language": "XPath",
-					"statement": stmt,
-					"offset": offset,
-					"limit": limit
-				]);
-
-				resp.total = result.total;
-				result.items.each { e ->
-					try {
-						resp.facetDefinitions.add(YAML.parse(e.resource));
-					} catch (Throwable ex) {
-						log.warn("Could not parse " + e.name, ex);
-					}
-				}
-				if (result.hasMore()) {
-					resp.nextOffset = offset + result.items.size();
-				}
+				resp.facetDefinitions.add(e.value);
 			}
 		}
 
