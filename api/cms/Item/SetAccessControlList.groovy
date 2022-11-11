@@ -3,6 +3,7 @@
 import api.cms.Item;
 import api.http.WebRequest;
 import api.http.WebResponse;
+import org.mintjams.jcr.security.PrincipalNotFoundException;
 
 {->
 	if (!repositorySession.isAuthorized()) {
@@ -48,12 +49,27 @@ import api.http.WebResponse;
 				return;
 			}
 
-			if (ace.isAllow) {
-				acl.allow(ace.grantee, ace.privileges as String[]);
-			} else {
-				acl.deny(ace.grantee, ace.privileges as String[]);
+			def principal = null;
+			try {
+				if (ace.grantee.endsWith("@user")) {
+					principal = repositorySession.principalProvider.getUserPrincipal(ace.grantee.split("@")[0]);
+				} else if (ace.grantee.endsWith("@group")) {
+					principal = repositorySession.principalProvider.getGroupPrincipal(ace.grantee.split("@")[0]);
+				} else {
+					try {
+						principal = repositorySession.principalProvider.getGroupPrincipal(ace.grantee.split("@")[0]);
+					} catch (PrincipalNotFoundException ignore) {
+						principal = repositorySession.principalProvider.getUserPrincipal(ace.grantee.split("@")[0]);
+					}
+				}
+			} catch (PrincipalNotFoundException ignore) {
+				// Bad Request
+				response.setStatus(400);
+				return;
 			}
+			acl.addAccessControlEntry(principal, ace.isAllow, ace.privileges as String[]);
 		};
+		repositorySession.accessControlManager.setPolicy(item.path, acl);
 
 		repositorySession.commit();
 
