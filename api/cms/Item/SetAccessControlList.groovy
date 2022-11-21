@@ -57,9 +57,9 @@ import org.mintjams.jcr.security.PrincipalNotFoundException;
 					principal = repositorySession.principalProvider.getGroupPrincipal(ace.grantee.split("@")[0]);
 				} else {
 					try {
-						principal = repositorySession.principalProvider.getGroupPrincipal(ace.grantee.split("@")[0]);
+						principal = repositorySession.principalProvider.getGroupPrincipal(ace.grantee);
 					} catch (PrincipalNotFoundException ignore) {
-						principal = repositorySession.principalProvider.getUserPrincipal(ace.grantee.split("@")[0]);
+						principal = repositorySession.principalProvider.getUserPrincipal(ace.grantee);
 					}
 				}
 			} catch (PrincipalNotFoundException ignore) {
