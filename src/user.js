@@ -11,15 +11,6 @@ let _axios;
 export class UserClient {
 	constructor({axios}) {
 		_axios = axios;
-
-		this.$everyone = this.newAuthorizable({
-			'id': 'everyone',
-			'isGroup': true,
-		});
-	}
-
-	get everyone() {
-		return this.$everyone;
 	}
 
 	createNewAuthorizable(params) {
