@@ -43,6 +43,12 @@ import org.mintjams.jcr.security.PrincipalNotFoundException;
 				return;
 			}
 
+			if (ace.isGroup == null) {
+				// Bad Request
+				response.setStatus(400);
+				return;
+			}
+
 			if (ace.privileges == null || ace.privileges.size() == 0) {
 				// Bad Request
 				response.setStatus(400);
@@ -51,16 +57,10 @@ import org.mintjams.jcr.security.PrincipalNotFoundException;
 
 			def principal = null;
 			try {
-				if (ace.grantee.endsWith("@user")) {
-					principal = repositorySession.principalProvider.getUserPrincipal(ace.grantee.split("@")[0]);
-				} else if (ace.grantee.endsWith("@group")) {
-					principal = repositorySession.principalProvider.getGroupPrincipal(ace.grantee.split("@")[0]);
+				if (!ace.isGroup) {
+					principal = repositorySession.principalProvider.getUserPrincipal(ace.grantee);
 				} else {
-					try {
-						principal = repositorySession.principalProvider.getGroupPrincipal(ace.grantee);
-					} catch (PrincipalNotFoundException ignore) {
-						principal = repositorySession.principalProvider.getUserPrincipal(ace.grantee);
-					}
+					principal = repositorySession.principalProvider.getGroupPrincipal(ace.grantee);
 				}
 			} catch (PrincipalNotFoundException ignore) {
 				// Bad Request
