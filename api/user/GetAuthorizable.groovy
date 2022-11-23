@@ -33,11 +33,6 @@ import api.security.Authorizable;
 		}
 
 		def authorizable = Authorizable.create(context).with(principal);
-		if (!authorizable.exists()) {
-			// Not Found
-			WebResponse.create(context).with(response).setStatus(404);
-			return;
-		}
 
 		// OK
 		WebResponse.create(context).with(response)
