@@ -26,49 +26,25 @@ import api.security.User;
 		response.setStatus(400);
 		return;
 	}
-	if (!params.isGroup && !params.password?.trim()) {
-		// Bad Request
-		response.setStatus(400);
-		return;
-	}
 
 	try {
-		def authorizable = Authorizable.create(context).findByName(id);
+		def principal;
+		if (params.isGroup) {
+			principal = repositorySession.userManager.getGroupPrincipal(id);
+		} else {
+			principal = repositorySession.userManager.getUserPrincipal(id);
+		}
+
+		def authorizable = Authorizable.create(context).with(principal);
 		if (authorizable.exists()) {
 			// Conflict
 			WebResponse.create(context).with(response).setStatus(409);
 			return;
 		}
 
-		def um = repositorySession.userManager;
-		if (params.isGroup) {
-			authorizable = Group.create(context).with(um.createGroup(id));
-		} else {
-			authorizable = User.create(context).with(um.createUser(id, params.password?.trim()));
-		}
-		repositorySession.commit();
+		repositorySession.userManager.registerIfNotExists(principal);
 
-		if (!params.isGroup) {
-			def webtopGroup = Authorizable.create(context).findByName("webtop-users");
-			if (!webtopGroup.exists()) {
-				webtopGroup = Group.create(context).with(um.createGroup("webtop-users"));
-				repositorySession.commit();
-				repositorySession.accessControlManager.getAccessControlList("/home").allow(webtopGroup.name, "jcr:read");
-				repositorySession.commit();
-			}
-
-			webtopGroup.addMembers([authorizable.name] as String[]);
-			def userFolder = Item.create(context).findByPath("/home/" + authorizable.name);
-			if (!userFolder.exists()) {
-				userFolder.mkdirs();
-				def acl = repositorySession.accessControlManager.getAccessControlList(userFolder.path);
-				acl.clear();
-				acl.allow(authorizable.name, "jcr:all");
-			}
-			repositorySession.commit();
-		}
-
-		// No Content
+		// Created
 		WebResponse.create(context).with(response).setStatus(201);
 		out.print(authorizable.toJson());
 		return;
