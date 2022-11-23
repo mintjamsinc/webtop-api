@@ -27,9 +27,9 @@ import api.security.Authorizable;
 
 		def principal;
 		if (params.isGroup) {
-			principal = repositorySession.userManager.getGroupPrincipal(id);
+			principal = repositorySession.principalProvider.getGroupPrincipal(id);
 		} else {
-			principal = repositorySession.userManager.getUserPrincipal(id);
+			principal = repositorySession.principalProvider.getUserPrincipal(id);
 		}
 
 		def authorizable = Authorizable.create(context).with(principal);

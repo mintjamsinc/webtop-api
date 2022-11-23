@@ -26,11 +26,11 @@ import api.util.JSON;
 				try {
 					def principal;
 					if (id.endsWith("@group")) {
-						principal = repositorySession.userManager.getGroupPrincipal(id.substring(0, id.lastIndexOf("@")));
+						principal = repositorySession.principalProvider.getGroupPrincipal(id.substring(0, id.lastIndexOf("@")));
 					} else if (id.endsWith("@user")) {
-						principal = repositorySession.userManager.getUserPrincipal(id.substring(0, id.lastIndexOf("@")));
+						principal = repositorySession.principalProvider.getUserPrincipal(id.substring(0, id.lastIndexOf("@")));
 					} else {
-						principal = repositorySession.userManager.getUserPrincipal(id);
+						principal = repositorySession.principalProvider.getUserPrincipal(id);
 					}
 					def e = Authorizable.create(context).with(principal);
 					if (e.exists()) {
