@@ -13,13 +13,31 @@ import api.security.Authorizable;
 
 	try {
 		def params = WebRequest.create(context).with(request).parseRequest();
-		if (!params.id) {
+		def id = params.id?.trim();
+		if (!id) {
+			// Bad Request
+			response.setStatus(400);
+			return;
+		}
+		if (params.isGroup == null) {
 			// Bad Request
 			response.setStatus(400);
 			return;
 		}
 
-		def authorizable = Authorizable.create(context).findByName(params.id);
+		def principal;
+		if (params.isGroup) {
+			principal = repositorySession.userManager.getGroupPrincipal(id);
+		} else {
+			principal = repositorySession.userManager.getUserPrincipal(id);
+		}
+
+		def authorizable = Authorizable.create(context).with(principal);
+		if (!authorizable.exists()) {
+			// Not Found
+			WebResponse.create(context).with(response).setStatus(404);
+			return;
+		}
 
 		// OK
 		WebResponse.create(context).with(response)
