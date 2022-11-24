@@ -66,10 +66,23 @@ import api.security.Authorizable;
 			}
 		}
 
+		if (params["mi:disabled"] != null) {
+			if (params["mi:disabled"]) {
+				attributes.setAttribute("mi:disabled", params["mi:disabled"] as boolean);
+				attributes.setAttribute("mi:disabledReason", params["mi:disabledReason"]?.trim());
+			} else {
+				attributes.removeAttribute("mi:disabled");
+				attributes.removeAttribute("mi:disabledReason");
+			}
+			attributes.setAttribute("jcr:lastModified", new Date());
+		}
+
 		if (params.properties != null) {
 			def protectedKeys = [
 				"identifier",
-				"isGroup"
+				"isGroup",
+				"mi:disabled",
+				"mi:disabledReason"
 			];
 			def attributeKeys = [
 				"mi:backgroundImage",
