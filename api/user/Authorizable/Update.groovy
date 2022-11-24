@@ -77,7 +77,7 @@ import api.security.Authorizable;
 			];
 
 			ItemHelper.create(context).with(attributes).importAttributes(params.properties.findAll {
-				if (protectedKeys.contains(it.key) || preferencesKeys.contains(it.key)) {
+				if (protectedKeys.contains(it.key) || attributeKeys.contains(it.key)) {
 					return false;
 				}
 				return true;
