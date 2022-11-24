@@ -66,13 +66,13 @@ import api.security.Authorizable;
 			}
 		}
 
-		if (params["mi:disabled"] != null) {
-			if (params["mi:disabled"]) {
-				attributes.setAttribute("mi:disabled", params["mi:disabled"] as boolean);
-				attributes.setAttribute("mi:disabledReason", params["mi:disabledReason"]?.trim());
+		if (params["disable"] != null) {
+			if (params["disable"]) {
+				attributes.setAttribute("disabled", true);
+				attributes.setAttribute("disabledReason", params["disabledReason"]?.trim());
 			} else {
-				attributes.removeAttribute("mi:disabled");
-				attributes.removeAttribute("mi:disabledReason");
+				attributes.removeAttribute("disabled");
+				attributes.removeAttribute("disabledReason");
 			}
 			attributes.setAttribute("jcr:lastModified", new Date());
 		}
@@ -81,16 +81,21 @@ import api.security.Authorizable;
 			def protectedKeys = [
 				"identifier",
 				"isGroup",
-				"mi:disabled",
-				"mi:disabledReason"
+				"disabled",
+				"disabledReason"
 			];
-			def attributeKeys = [
+			def preferencesKeys = [
 				"mi:backgroundImage",
 				"mi:backgroundSize"
 			];
 
+			ItemHelper.create(context).with(preferences).importAttributes(params.properties.findAll {
+				return preferencesKeys.contains(it.key);
+			});
+			preferences.setAttribute("jcr:lastModified", new Date());
+
 			ItemHelper.create(context).with(attributes).importAttributes(params.properties.findAll {
-				if (protectedKeys.contains(it.key) || attributeKeys.contains(it.key)) {
+				if (protectedKeys.contains(it.key) || preferencesKeys.contains(it.key)) {
 					return false;
 				}
 				return true;
