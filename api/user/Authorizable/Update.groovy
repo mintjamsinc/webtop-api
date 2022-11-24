@@ -17,15 +17,28 @@ import api.security.Authorizable;
 	try {
 		def now = new Date();
 		def params = WebRequest.create(context).with(request).parseRequest();
-		if (!params.id?.trim()) {
+		def id = params.id?.trim();
+		if (!id) {
+			// Bad Request
+			response.setStatus(400);
+			return;
+		}
+		if (params.isGroup == null) {
 			// Bad Request
 			response.setStatus(400);
 			return;
 		}
 
-		repositorySession.userManager.registerIfNotExists();
+		def principal;
+		if (params.isGroup) {
+			principal = repositorySession.principalProvider.getGroupPrincipal(id);
+		} else {
+			principal = repositorySession.principalProvider.getUserPrincipal(id);
+		}
 
-		def authorizable = Authorizable.create(context).with(repositorySession.userPrincipal);
+		repositorySession.userManager.registerIfNotExists(principal);
+
+		def authorizable = Authorizable.create(context).with(principal);
 		def attributes = authorizable.attributes;
 
 		if (params["mi:photo"] != null) {

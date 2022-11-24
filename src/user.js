@@ -107,6 +107,7 @@ export class Authorizable {
 			params = {};
 		}
 		params.id = instance.$data.id;
+		params.isGroup = instance.$data.isGroup;
 		return _axios.post(_baseUrl + '/user/Authorizable/Update.groovy', params).then(function(response) {
 			instance.$data = response.data;
 			if (typeof instance.onUpdated == 'function') {
@@ -203,8 +204,8 @@ export class User extends Authorizable {
 
 	get isDisabled() {
 		let instance = this;
-		if (instance.getProperty('mi:disabled')) {
-			return instance.getProperty('mi:disabled');
+		if (instance.getProperty('disabled')) {
+			return instance.getProperty('disabled');
 		}
 
 		return false;
@@ -212,8 +213,8 @@ export class User extends Authorizable {
 
 	get disabledReason() {
 		let instance = this;
-		if (instance.getProperty('mi:disabledReason')) {
-			return instance.getProperty('mi:disabledReason');
+		if (instance.getProperty('disabledReason')) {
+			return instance.getProperty('disabledReason');
 		}
 
 		return '';
