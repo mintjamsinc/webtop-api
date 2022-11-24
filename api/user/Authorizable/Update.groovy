@@ -67,24 +67,14 @@ import api.security.Authorizable;
 		}
 
 		if (params.properties != null) {
-			def preferences = Item.create(context).findByPath("/home/" + repositorySession.userID + "/preferences");
-			if (!preferences.exists()) {
-				preferences.createNewFile();
-			}
-
 			def protectedKeys = [
 				"identifier",
 				"isGroup"
 			];
-			def preferencesKeys = [
+			def attributeKeys = [
 				"mi:backgroundImage",
 				"mi:backgroundSize"
 			];
-
-			ItemHelper.create(context).with(preferences).importAttributes(params.properties.findAll {
-				return preferencesKeys.contains(it.key);
-			});
-			preferences.setAttribute("jcr:lastModified", new Date());
 
 			ItemHelper.create(context).with(attributes).importAttributes(params.properties.findAll {
 				if (protectedKeys.contains(it.key) || preferencesKeys.contains(it.key)) {

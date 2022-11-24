@@ -200,6 +200,24 @@ export class User extends Authorizable {
 		let instance = this;
 		return (sha256(instance.id + ':' + Date.now()).toString() + uuidv4().split('-').join('')).toLowerCase();
 	}
+
+	get isDisabled() {
+		let instance = this;
+		if (instance.getProperty('mi:disabled')) {
+			return instance.getProperty('mi:disabled');
+		}
+
+		return false;
+	}
+
+	get disabledReason() {
+		let instance = this;
+		if (instance.getProperty('mi:disabledReason')) {
+			return instance.getProperty('mi:disabledReason');
+		}
+
+		return '';
+	}
 }
 
 export class Group extends Authorizable {
