@@ -5,7 +5,7 @@ import api.http.WebResponse;
 import api.security.otp.TOTP;
 
 {->
-	if (repositorySession.isAnonymous()) {
+	if (repositorySession.isAnonymous() || repositorySession.userManager.isDisabled()) {
 		// Unauthorized
 		response.setStatus(401);
 		return;
