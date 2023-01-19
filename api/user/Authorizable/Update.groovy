@@ -40,6 +40,10 @@ import api.security.Authorizable;
 
 		def authorizable = Authorizable.create(context).with(principal);
 		def attributes = authorizable.attributes;
+		def preferences = Item.create(context).findByPath("/home/" + principal.name + "/preferences");
+		if (!preferences.exists()) {
+			preferences.createNewFile();
+		}
 
 		if (params["mi:photo"] != null) {
 			if (params["mi:photo"].uploadID) {
